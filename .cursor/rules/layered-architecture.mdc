@@ -1,0 +1,56 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Layered Architecture Guide
+
+This codebase follows a Clean Architecture approach that separates concerns into distinct layers.
+
+## Core Principles
+
+1. **Independence of Frameworks**: The architecture doesn't depend on specific libraries or frameworks
+2. **Testability**: Business rules can be tested without UI, database, or external elements
+3. **Independence of UI, Database, and External Agencies**: Business rules are not bound to external implementations
+
+## Layer Structure
+
+### 1. Domain Layer (Innermost)
+- Contains enterprise business rules and entities
+- Has no dependencies on other layers
+- Uses property bag pattern with private properties and public getters
+- Implements validation in static factory methods
+
+### 2. Application Layer
+- Contains use cases that orchestrate domain entities
+- Defines input/output DTOs for layer communication
+- Uses factories to create and configure use cases
+- Implements application-specific business logic
+
+### 3. Repository Layer
+- Defines interfaces for data access
+- Acts as contracts for infrastructure implementations
+- Provides base repository interface and specialized extensions
+
+### 4. Infrastructure Layer
+- Implements repository interfaces
+- Contains adapters for external services
+- Includes database access logic
+- Uses query builders for complex data operations
+
+### 5. Presentation Layer
+- Handles HTTP requests and responses
+- Contains controllers that use application use cases
+- Implements input validation
+- Defines routes and request interfaces
+
+## Implementation Process
+
+1. Define domain entities, enums, and interfaces first
+2. Create repository and service interfaces
+3. Implement use cases in the application layer
+4. Create infrastructure adapters
+5. Implement presentation controllers and routes
+
+## Reference
+For detailed implementation guidelines, see [src/docs/layered-architecture-SOP.md](mdc:src/docs/layered-architecture-SOP.md)
