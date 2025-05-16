@@ -1,0 +1,117 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Rule Name: presentation-layer
+Description: 
+# Presentation Layer Guide
+
+The Presentation Layer handles external requests and adapts them to application use cases.
+
+## Key Principles
+
+1. **Adapter Pattern**: Converts external requests to application DTOs
+2. **Validation First**: Validates input before processing
+3. **Use Case Delegation**: Forwards validated requests to use cases
+4. **Consistent Response Format**: Standardized success/error responses
+5. **Single Validation Point**: Input validation should only happen once through middleware
+
+## Structure
+
+```
+presentation/
+├── controllers/       # Request handlers
+├── routes/            # API endpoint definitions
+├── validation/        # Request validation schemas
+├── interfaces/        # Type definitions
+└── middlewares/       # Express middleware
+```
+
+## Component Implementation
+
+### Controllers
+
+1. **Static Methods**: Use stateless classes with static methods
+2. **Factory Usage**: Create use cases via factories
+3. **Parameter Extraction**: Convert request data to DTOs
+4. **Error Handling**: Catch and delegate errors
+5. **Standardized Response**: Consistent format
+6. **Skip Redundant Validation**: Never re-validate inputs that were already validated by middleware
+
+```typescript
+export class Controller {
+  static async method(req: ValidatedRequest, res: Response, next: NextFunction) {
+    // Create use case
+    const { useCase, logger } = Factory.create(req);
+    
+    try {
+      // Extract parameters and execute (no validation needed)
+      const dto = { /* from request */ };
+      const result = await useCase.execute(dto);
+      
+      // Return standardized response
+      res.send({ success: true, data: result });
+    } catch (error) {
+      logger.error('Error', error);
+      next(error);
+    }
+  }
+}
+```
+
+### Routes
+
+1. **Express Router**: Group related endpoints
+2. **Validation Middleware**: Apply to each endpoint
+3. **HTTP Method Semantics**: Use appropriate methods
+4. **Controller Binding**: Bind static methods to handle context
+
+```typescript
+const router = Router();
+const validator = createValidator({ passError: true });
+
+router.get(
+  '/endpoint',
+  validator.query(schema.operation),
+  Controller.method.bind(Controller)
+);
+```
+
+### Validation
+
+1. **Schema Library**: Use Joi for schema validation
+2. **Separate Schemas**: For different endpoints
+3. **Simple Validation**: Keep validations minimal without trim() or custom messages
+4. **Request Parts**: Validate query, params, and body
+5. **Single Source of Truth**: Define all required field validations in schema files, never duplicate in controllers or use cases
+6. **Contextual Validation**: Optional fields may need additional validation where they are used
+
+```typescript
+// Preferred validation style
+const schema = {
+  operation: Joi.object({
+    requiredParam: Joi.string().required(),
+    optionalParam: Joi.string().optional()
+  })
+};
+```
+
+### Interfaces
+
+1. **Request Types**: Define expected parameters
+2. **Framework Extensions**: Extend framework types
+3. **Presentation-Specific**: Focus on HTTP concerns
+
+## Best Practices
+
+1. **No Business Logic**: Controllers only delegate
+2. **Thin Controllers**: Keep controllers focused
+3. **Error Transformation**: Convert to client-friendly format
+4. **Consistent Error Codes**: Use standard HTTP status codes
+5. **Documentation**: Document API endpoints with types
+6. **Avoid Redundant Validation**: Don't re-validate required fields that are already validated by middleware
+7. **Contextual Validation**: Validate optional fields that are needed for specific operations
+
+## Reference
+For detailed implementation guidelines, see [src/docs/presentation-layer-sop.md](mdc:src/docs/presentation-layer-sop.md)

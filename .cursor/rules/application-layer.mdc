@@ -1,0 +1,96 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+Rule Name: application-layer
+Description: 
+# Application Layer Guide
+
+The Application Layer orchestrates domain objects to implement use cases.
+
+## Key Principles
+
+1. **Orchestration**: Coordinates domain entities and repositories
+2. **Use Case Focus**: One class per business operation
+3. **Input/Output DTOs**: Plain data structures for layer communication
+4. **Dependency Inversion**: Depends on interfaces, not implementations
+5. **Business Validation Only**: Focus on business rules validation, not input structure validation
+
+## Structure
+
+```
+application/
+├── useCases/           # Business use cases organized by feature
+│   ├── useCase1/       # Files related to a specific use case
+│   │   ├── useCase1.ts               # Main implementation
+│   │   ├── useCase1RequestDto.ts     # Input data
+│   │   ├── useCase1ResponseDto.ts    # Output data
+│   │   ├── useCase1Factory.ts        # Dependency creation
+│   │   └── mappers/                  # Transformations
+├── constants/          # Application-specific constants
+└── interfaces/         # Shared interfaces
+```
+
+## Component Implementation
+
+### Use Cases
+
+1. **Single Responsibility**: Each use case handles one operation
+2. **Constructor Injection**: For all dependencies
+3. **Execute Method**: Takes request DTO, returns response DTO
+4. **Error Handling**: Proper error propagation
+5. **Parallel Operations**: Use Promise.all for concurrent tasks
+6. **Avoid Input Validation Duplication**: Assume input structure is valid (validated at presentation layer)
+
+```typescript
+export class UseCase {
+  constructor(private repo1: Interface1, private repo2: Interface2) {}
+
+  async execute(dto: RequestDto): Promise<ResponseDto> {
+    // Implementation (no need to validate dto structure)
+    // Only validate business rules if needed
+    
+    const [result1, result2] = await Promise.all([
+      this.repo1.operation(),
+      this.repo2.operation()
+    ]);
+    
+    return { /* transformed response */ };
+  }
+}
+```
+
+### DTOs (Data Transfer Objects)
+
+1. **Plain Interfaces**: No behavior, just data
+2. **Input/Output Separation**: Different DTOs for request/response
+3. **Minimal Fields**: Include only necessary data
+4. **Typed**: Use TypeScript for type safety
+
+### Factories
+
+1. **Static Create Method**: Returns fully configured use case
+2. **Repository Creation**: Create required repositories
+3. **Service Creation**: Include cross-cutting services
+
+### Mappers
+
+1. **Transformation Logic**: Convert between domain and DTOs
+2. **Static Methods**: No instance required
+3. **One-Way**: Specific transformations (toDomain/toDto)
+4. **Composition**: For complex transformations
+
+## Best Practices
+
+1. **No Business Logic**: Delegate to domain entities
+2. **Thin Use Cases**: Focus on orchestration
+3. **Specific DTOs**: Create DTOs for specific use cases
+4. **Common Behavior Extraction**: Use private helper methods
+5. **Consistent Naming**: Follow consistent patterns
+6. **Layer-Appropriate Validation**: Focus on business rules validation, not input structure/format validation
+7. **Trust Input DTOs**: Assume required fields in DTOs are valid (validated at presentation layer)
+8. **Contextual Validation**: Validate optional fields where they become required for business operations
+
+## Reference
+For detailed implementation guidelines, see [src/docs/application-layer-sop.md](mdc:src/docs/application-layer-sop.md)

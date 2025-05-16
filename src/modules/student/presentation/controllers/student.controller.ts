@@ -6,15 +6,6 @@ export class StudentController {
     try {
       const studentId = req.query.studentId as string;
 
-      // Validation is now handled by the middleware, but we'll keep this check as a fallback
-      if (!studentId) {
-        res.status(400).json({
-          status: 'error',
-          message: 'Student ID is required',
-        });
-        return;
-      }
-
       const useCase = GetStudentDetailsFactory.create();
       const result = await useCase.execute({ studentId });
 
