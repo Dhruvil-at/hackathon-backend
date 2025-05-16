@@ -26,6 +26,7 @@ This codebase follows a Clean Architecture approach that separates concerns into
 - Defines input/output DTOs for layer communication
 - Uses factories to create and configure use cases
 - Implements application-specific business logic
+- Includes additional validation for use case inputs
 
 ### 3. Repository Layer
 - Defines interfaces for data access
@@ -40,9 +41,19 @@ This codebase follows a Clean Architecture approach that separates concerns into
 
 ### 5. Presentation Layer
 - Handles HTTP requests and responses
-- Contains controllers that use application use cases
-- Implements input validation
-- Defines routes and request interfaces
+- Contains controllers with static methods
+- Implements input validation using libraries like Joi
+- Defines routes with validators
+- Uses middleware for error handling
+- Uses static controller methods with binding
+
+## Module Organization
+
+- Each module is organized by feature domain (e.g., users, products)
+- No individual module index files, instead use a centralized modules/index.ts
+- The main modules index file imports all routes and exports them
+- Routes are mounted with their appropriate base paths
+- Error handling middleware is configured at the module level
 
 ## Implementation Process
 
@@ -50,7 +61,47 @@ This codebase follows a Clean Architecture approach that separates concerns into
 2. Create repository and service interfaces
 3. Implement use cases in the application layer
 4. Create infrastructure adapters
-5. Implement presentation controllers and routes
+5. Implement validation in the presentation layer
+6. Create controllers with static methods
+7. Define routes with validation middleware
+8. Configure the central modules index file
+
+## Router Format
+Routes should be defined using validators and exported directly:
+```javascript
+import { Router } from 'express';
+import { createValidator } from 'express-joi-validation';
+import validationSchema from '../validation/schema.validation';
+import { Controller } from '../controllers/controller';
+
+const router = Router();
+const validator = createValidator({ passError: true });
+
+router.get(
+  '/endpoint',
+  validator.query(validationSchema.operation),
+  Controller.method.bind(Controller)
+);
+
+export { router };
+```
+
+## Modules Index Format
+The central modules/index.ts should mount all module routes:
+```javascript
+import { Router } from 'express';
+import { router as moduleRouter } from './module/presentation/routes/module.routes';
+
+const router = Router({ mergeParams: true });
+
+// Mount module routes
+router.use('/module-endpoint', moduleRouter);
+
+// Add error handler middleware
+router.use(errorHandler);
+
+export default router;
+```
 
 ## Reference
 For detailed implementation guidelines, see [src/docs/layered-architecture-SOP.md](mdc:src/docs/layered-architecture-SOP.md)

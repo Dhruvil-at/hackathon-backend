@@ -2,10 +2,11 @@ import { Request, Response } from 'express';
 import { GetStudentDetailsFactory } from '../../application/useCases/getStudentDetails/getStudentDetailsFactory';
 
 export class StudentController {
-  public async getStudentDetails(req: Request, res: Response): Promise<void> {
+  public static async getStudentDetails(req: Request, res: Response): Promise<void> {
     try {
       const studentId = req.query.studentId as string;
 
+      // Validation is now handled by the middleware, but we'll keep this check as a fallback
       if (!studentId) {
         res.status(400).json({
           status: 'error',

@@ -9,6 +9,11 @@ export class GetStudentDetailsUseCase {
   async execute(
     request: GetStudentDetailsRequestDto,
   ): Promise<GetStudentDetailsResponseDto | null> {
+    // Validate request
+    if (!request.studentId || request.studentId.trim() === '') {
+      throw new Error('Student ID is required');
+    }
+
     const student = await this.studentRepository.findById(request.studentId);
 
     if (!student) {

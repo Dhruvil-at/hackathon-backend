@@ -21,6 +21,7 @@ This document outlines the standard procedure for creating new modules using the
 ```
 src/clean-architecture/
 ├── modules/                  # Feature modules (domain-specific)
+│   ├── index.ts              # Centralized module export point
 │   └── [module-name]/        # e.g., user-management
 │       ├── application/      # Application business rules
 │       │   └── useCases/     # Individual use cases
@@ -42,9 +43,9 @@ src/clean-architecture/
 │       │   ├── controllers/  # Request handlers
 │       │   ├── interfaces/   # Presentation-specific interfaces
 │       │   ├── routes/       # API routes
-│       │   └── validation/   # Input validation
-│       ├── repositories/     # Repository interfaces
-│       └── services/         # Service interfaces
+│       │   ├── middleware/   # Express middleware
+│       │   └── validation/   # Input validation schemas
+│       └── repositories/     # Repository interfaces
 └── shared/                   # Shared utilities and services
     ├── factories/            # Cross-cutting factories
     ├── services/             # Shared services
@@ -57,121 +58,128 @@ src/clean-architecture/
 
 The innermost layer containing enterprise-wide business rules and entities. This layer has no dependencies on other layers.
 
--   **Entities**: Core business objects with intrinsic business rules
--   **Interfaces**: Contracts that domain services will implement, enums for value objects
--   **Services**: Domain-specific business logic implementations
+- **Entities**: Core business objects with intrinsic business rules
+- **Interfaces**: Contracts that domain services will implement, enums for value objects
+- **Services**: Domain-specific business logic implementations
 
 ### 2. Application Layer
 
 Contains application-specific business rules. It orchestrates the flow of data and implements use cases that define the operations available to the presentation layer.
 
--   **Use Cases**: One class per use case, implementing specific business logic
--   **DTOs**: Data Transfer Objects for input/output
--   **Factories**: Classes that create and configure use cases with their dependencies
--   **Use Case Mappers**: Specialized mappers for specific use case transformations
+- **Use Cases**: One class per use case, implementing specific business logic
+- **DTOs**: Data Transfer Objects for input/output
+- **Factories**: Classes that create and configure use cases with their dependencies
+- **Use Case Mappers**: Specialized mappers for specific use case transformations
 
 ### 3. Repository Layer
 
 Defines interfaces for data access. These interfaces are implemented by the infrastructure layer.
 
--   **Repository Interfaces**: Contracts that repository implementations must fulfill
--   **Query Specifications**: Objects that define query criteria
+- **Repository Interfaces**: Contracts that repository implementations must fulfill
+- **Query Specifications**: Objects that define query criteria
 
 ### 4. Infrastructure Layer
 
 Contains adapters that convert data from external agencies (like databases, APIs) to the format expected by the inner layers.
 
--   **Repository Implementations**: Classes that implement the repository interfaces
--   **External Service Adapters**: Wrappers around external APIs
--   **Database Access**: Concrete implementations of data access logic
--   **Query Builders**: Classes that build complex queries for data retrieval
+- **Repository Implementations**: Classes that implement the repository interfaces
+- **External Service Adapters**: Wrappers around external APIs
+- **Database Access**: Concrete implementations of data access logic
+- **Query Builders**: Classes that build complex queries for data retrieval
 
 ### 5. Presentation Layer
 
 Handles HTTP requests, input validation, and response formatting.
 
--   **Controllers**: Handlers for API endpoints
--   **Routes**: HTTP route definitions
--   **Validation**: Input validation logic
--   **View Models/DTOs**: Specialized data structures for the UI
--   **Interfaces**: Type definitions for request parameters
+- **Controllers**: Handlers for API endpoints
+- **Routes**: HTTP route definitions
+- **Validation**: Input validation logic
+- **View Models/DTOs**: Specialized data structures for the UI
+- **Interfaces**: Type definitions for request parameters
 
 ## Implementation Process
 
 ### 1. Define Domain Layer
 
--   Start by defining the core domain entities and interfaces in the `domain` folder
--   Create entity classes using a property bag pattern with private properties and public getters
--   Define value objects for immutable data structures
--   Create enums for representing domain concepts with a fixed set of values
--   Implement domain service interfaces in the `domain/services` folder
--   Use static factory methods to create and validate domain entities
--   Separate properties interfaces from entity classes for better type checking
--   Keep domain entities focused on their core business logic
--   Ensure entities expose only the methods needed for their behavior
+- Start by defining the core domain entities and interfaces in the `domain` folder
+- Create entity classes using a property bag pattern with private properties and public getters
+- Define value objects for immutable data structures
+- Create enums for representing domain concepts with a fixed set of values
+- Implement domain service interfaces in the `domain/services` folder
+- Use static factory methods to create and validate domain entities
+- Separate properties interfaces from entity classes for better type checking
+- Keep domain entities focused on their core business logic
+- Ensure entities expose only the methods needed for their behavior
 
 ### 2. Create Repository Interfaces
 
--   Create interfaces for data access in the `repositories` folder
--   These interfaces should be independent of any specific database implementation
--   Define methods that reflect domain language, not data access specifics
--   Create a base repository interface for common operations
+- Create interfaces for data access in the `repositories` folder
+- These interfaces should be independent of any specific database implementation
+- Define methods that reflect domain language, not data access specifics
+- Create a base repository interface for common operations
 
 ### 3. Create Service Interfaces
 
--   Define service interfaces in the `services` folder
--   Services should represent domain operations that don't fit in entities
--   Keep service interfaces focused on a single responsibility
--   Define clear contracts with well-typed parameters and return values
+- Define service interfaces in the `services` folder
+- Services should represent domain operations that don't fit in entities
+- Keep service interfaces focused on a single responsibility
+- Define clear contracts with well-typed parameters and return values
 
 ### 4. Create Application Layer
 
--   Implement use cases in the `application/useCases` folder
--   Organize each use case in its own folder with all related components
--   Each use case should represent one atomic operation the system can perform
--   Create separate files for each component of the use case:
-    -   Main use case class
-    -   Factory class
-    -   Request/response DTOs
-    -   Use case specific mappers
--   Keep use cases focused on orchestrating domain entities and services
--   Use Promise.all for parallel operations to optimize performance
--   Implement proper error handling and validation
--   Create clear, well-defined input and output DTOs
+- Implement use cases in the `application/useCases` folder
+- Organize each use case in its own folder with all related components
+- Each use case should represent one atomic operation the system can perform
+- Create separate files for each component of the use case:
+  - Main use case class
+  - Factory class
+  - Request/response DTOs
+  - Use case specific mappers
+- Keep use cases focused on orchestrating domain entities and services
+- Use Promise.all for parallel operations to optimize performance
+- Implement proper error handling and validation
+- Create clear, well-defined input and output DTOs
 
 ### 5. Implement Infrastructure Layer
 
--   Implement repository interfaces in the `infrastructure/repositories` folder
--   Create a base repository for common data access patterns
--   Implement data mappers to convert between domain and persistence models
--   Create query builders for complex data access
--   Implement adapter classes for external services
--   Use the adapter pattern to insulate the domain from external dependencies
+- Implement repository interfaces in the `infrastructure/repositories` folder
+- Create a base repository for common data access patterns
+- Implement data mappers to convert between domain and persistence models
+- Create query builders for complex data access
+- Implement adapter classes for external services
+- Use the adapter pattern to insulate the domain from external dependencies
 
 ### 6. Implement Domain Services
 
--   Implement service interfaces defined in the `services` folder
--   Place implementations in the `domain/services` folder
--   Keep service implementations focused on domain logic
--   Use dependency injection for external dependencies
--   Ensure services work with domain entities, not DTOs
+- Implement service interfaces defined in the `services` folder
+- Place implementations in the `domain/services` folder
+- Keep service implementations focused on domain logic
+- Use dependency injection for external dependencies
+- Ensure services work with domain entities, not DTOs
 
 ### 7. Create Mappers
 
--   Implement mappers to transform data between layers
--   Create use case specific mappers for specialized transformations
--   Use consistent naming conventions (toDomain, toDto, toPersistence)
--   Keep mappers focused on a single transformation responsibility
--   Create separate mapper classes for complex transformations
--   Implement mappers with static methods for easier usage
+- Implement mappers to transform data between layers
+- Create use case specific mappers for specialized transformations
+- Use consistent naming conventions (toDomain, toDto, toPersistence)
+- Keep mappers focused on a single transformation responsibility
+- Create separate mapper classes for complex transformations
+- Implement mappers with static methods for easier usage
 
 ### 8. Create Presentation Layer
 
--   Define routes in `presentation/routes`
--   Implement controllers in `presentation/controllers` that use the application use cases
--   Add request validation in `presentation/validation`
--   Create interfaces for request parameters in `presentation/interfaces`
--   Use dependency injection to wire dependencies together
+- Define routes in `presentation/routes`
+- Implement controllers with static methods in `presentation/controllers`
+- Add validation schemas in `presentation/validation`
+- Create middleware for error handling in `presentation/middleware`
+- Use the express-joi-validation library for request validation
+- Implement error handlers for validation and other errors
+
+### 9. Configure Module Exports
+
+- Update the main `modules/index.ts` file to import and export all module routes
+- Mount routes with appropriate base paths
+- Configure middleware for error handling
 
 ## Code Examples
 
@@ -180,70 +188,70 @@ Handles HTTP requests, input validation, and response formatting.
 ```typescript
 // Properties interface
 export interface UserProps {
-	id: string;
-	email: string;
-	name: string;
-	isActive: boolean;
-	role: UserRole;
-	createdAt: Date;
-	updatedAt: Date;
+  id: string;
+  email: string;
+  name: string;
+  isActive: boolean;
+  role: UserRole;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // Domain entity
 export class User {
-	private props: UserProps;
+  private props: UserProps;
 
-	private constructor(props: UserProps) {
-		this.props = props;
-	}
+  private constructor(props: UserProps) {
+    this.props = props;
+  }
 
-	static create(props: UserProps): User {
-		// Domain validation
-		if (!isValidEmail(props.email)) {
-			throw new Error('Invalid email format');
-		}
+  static create(props: UserProps): User {
+    // Domain validation
+    if (!isValidEmail(props.email)) {
+      throw new Error('Invalid email format');
+    }
 
-		if (props.name.length < 2) {
-			throw new Error('Name must be at least 2 characters');
-		}
+    if (props.name.length < 2) {
+      throw new Error('Name must be at least 2 characters');
+    }
 
-		return new User(props);
-	}
+    return new User(props);
+  }
 
-	getId(): string {
-		return this.props.id;
-	}
+  getId(): string {
+    return this.props.id;
+  }
 
-	getName(): string {
-		return this.props.name;
-	}
+  getName(): string {
+    return this.props.name;
+  }
 
-	isActive(): boolean {
-		return this.props.isActive;
-	}
+  isActive(): boolean {
+    return this.props.isActive;
+  }
 
-	getRole(): UserRole {
-		return this.props.role;
-	}
+  getRole(): UserRole {
+    return this.props.role;
+  }
 
-	deactivate(): void {
-		this.props.isActive = false;
-		this.props.updatedAt = new Date();
-	}
+  deactivate(): void {
+    this.props.isActive = false;
+    this.props.updatedAt = new Date();
+  }
 
-	changeRole(newRole: UserRole): void {
-		if (this.props.role === UserRole.ADMIN && newRole !== UserRole.ADMIN) {
-			throw new Error('Admin role cannot be changed');
-		}
+  changeRole(newRole: UserRole): void {
+    if (this.props.role === UserRole.ADMIN && newRole !== UserRole.ADMIN) {
+      throw new Error('Admin role cannot be changed');
+    }
 
-		this.props.role = newRole;
-		this.props.updatedAt = new Date();
-	}
+    this.props.role = newRole;
+    this.props.updatedAt = new Date();
+  }
 
-	// Domain behavior
-	canAccessResource(resource: Resource): boolean {
-		return this.props.isActive && hasPermission(this.props.role, resource);
-	}
+  // Domain behavior
+  canAccessResource(resource: Resource): boolean {
+    return this.props.isActive && hasPermission(this.props.role, resource);
+  }
 }
 ```
 
@@ -251,17 +259,17 @@ export class User {
 
 ```typescript
 export enum UserRole {
-	ADMIN = 'admin',
-	MANAGER = 'manager',
-	EDITOR = 'editor',
-	USER = 'user'
+  ADMIN = 'admin',
+  MANAGER = 'manager',
+  EDITOR = 'editor',
+  USER = 'user',
 }
 
 export enum ResourceType {
-	DASHBOARD = 'dashboard',
-	REPORTS = 'reports',
-	USERS = 'users',
-	SETTINGS = 'settings'
+  DASHBOARD = 'dashboard',
+  REPORTS = 'reports',
+  USERS = 'users',
+  SETTINGS = 'settings',
 }
 ```
 
@@ -269,16 +277,16 @@ export enum ResourceType {
 
 ```typescript
 export interface BaseRepository {
-	executeQuery(query: QueryBuilder, index: string, queryIdentifier: string): Promise<any>;
+  executeQuery(query: QueryBuilder, index: string, queryIdentifier: string): Promise<any>;
 }
 
 export interface UserRepository extends BaseRepository {
-	findById(id: string): Promise<User | null>;
-	findByEmail(email: string): Promise<User | null>;
-	findByRole(role: UserRole): Promise<User[]>;
-	save(user: User): Promise<void>;
-	update(user: User): Promise<void>;
-	delete(id: string): Promise<void>;
+  findById(id: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
+  findByRole(role: UserRole): Promise<User[]>;
+  save(user: User): Promise<void>;
+  update(user: User): Promise<void>;
+  delete(id: string): Promise<void>;
 }
 ```
 
@@ -286,8 +294,8 @@ export interface UserRepository extends BaseRepository {
 
 ```typescript
 export interface EmailService {
-	sendWelcomeEmail(recipient: string, name: string): Promise<void>;
-	sendPasswordResetEmail(recipient: string, resetToken: string): Promise<void>;
+  sendWelcomeEmail(recipient: string, name: string): Promise<void>;
+  sendPasswordResetEmail(recipient: string, resetToken: string): Promise<void>;
 }
 ```
 
@@ -295,39 +303,39 @@ export interface EmailService {
 
 ```typescript
 export class EmailServiceImpl implements EmailService {
-	constructor(private emailProvider: EmailProvider) {}
+  constructor(private emailProvider: EmailProvider) {}
 
-	async sendWelcomeEmail(recipient: string, name: string): Promise<void> {
-		const template = this.loadTemplate('welcome');
-		const content = this.populateTemplate(template, { name });
+  async sendWelcomeEmail(recipient: string, name: string): Promise<void> {
+    const template = this.loadTemplate('welcome');
+    const content = this.populateTemplate(template, { name });
 
-		await this.emailProvider.send({
-			to: recipient,
-			subject: 'Welcome to our platform',
-			content
-		});
-	}
+    await this.emailProvider.send({
+      to: recipient,
+      subject: 'Welcome to our platform',
+      content,
+    });
+  }
 
-	async sendPasswordResetEmail(recipient: string, resetToken: string): Promise<void> {
-		const template = this.loadTemplate('password-reset');
-		const content = this.populateTemplate(template, { resetToken });
+  async sendPasswordResetEmail(recipient: string, resetToken: string): Promise<void> {
+    const template = this.loadTemplate('password-reset');
+    const content = this.populateTemplate(template, { resetToken });
 
-		await this.emailProvider.send({
-			to: recipient,
-			subject: 'Reset your password',
-			content
-		});
-	}
+    await this.emailProvider.send({
+      to: recipient,
+      subject: 'Reset your password',
+      content,
+    });
+  }
 
-	private loadTemplate(name: string): string {
-		// Implementation details
-		return '';
-	}
+  private loadTemplate(name: string): string {
+    // Implementation details
+    return '';
+  }
 
-	private populateTemplate(template: string, data: any): string {
-		// Implementation details
-		return '';
-	}
+  private populateTemplate(template: string, data: any): string {
+    // Implementation details
+    return '';
+  }
 }
 ```
 
@@ -335,40 +343,40 @@ export class EmailServiceImpl implements EmailService {
 
 ```typescript
 export class CreateUserUseCase {
-	constructor(private userRepository: UserRepository, private emailService: EmailService) {}
+  constructor(private userRepository: UserRepository, private emailService: EmailService) {}
 
-	async execute(dto: CreateUserDto): Promise<UserResponseDto> {
-		// Check if user already exists
-		const existingUser = await this.userRepository.findByEmail(dto.email);
-		if (existingUser) {
-			throw new Error('User already exists');
-		}
+  async execute(dto: CreateUserDto): Promise<UserResponseDto> {
+    // Check if user already exists
+    const existingUser = await this.userRepository.findByEmail(dto.email);
+    if (existingUser) {
+      throw new Error('User already exists');
+    }
 
-		// Create user entity
-		const user = User.create({
-			id: generateId(),
-			email: dto.email,
-			name: dto.name,
-			role: UserRole.USER,
-			isActive: true,
-			createdAt: new Date(),
-			updatedAt: new Date()
-		});
+    // Create user entity
+    const user = User.create({
+      id: generateId(),
+      email: dto.email,
+      name: dto.name,
+      role: UserRole.USER,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
 
-		// Save user
-		await this.userRepository.save(user);
+    // Save user
+    await this.userRepository.save(user);
 
-		// Send welcome email
-		await this.emailService.sendWelcomeEmail(dto.email, dto.name);
+    // Send welcome email
+    await this.emailService.sendWelcomeEmail(dto.email, dto.name);
 
-		// Return response
-		return {
-			id: user.getId(),
-			name: user.getName(),
-			email: dto.email,
-			role: user.getRole()
-		};
-	}
+    // Return response
+    return {
+      id: user.getId(),
+      name: user.getName(),
+      email: dto.email,
+      role: user.getRole(),
+    };
+  }
 }
 ```
 
@@ -376,9 +384,9 @@ export class CreateUserUseCase {
 
 ```typescript
 export interface CreateUserDto {
-	name: string;
-	email: string;
-	password: string;
+  name: string;
+  email: string;
+  password: string;
 }
 ```
 
@@ -386,10 +394,10 @@ export interface CreateUserDto {
 
 ```typescript
 export interface UserResponseDto {
-	id: string;
-	name: string;
-	email: string;
-	role: UserRole;
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
 }
 ```
 
@@ -397,13 +405,13 @@ export interface UserResponseDto {
 
 ```typescript
 export class CreateUserFactory {
-	static create() {
-		const logger = new LoggerService();
-		const userRepository = new UserRepositoryImpl();
-		const emailService = new EmailServiceImpl(new EmailProviderImpl());
-		const useCase = new CreateUserUseCase(userRepository, emailService);
-		return { useCase, logger };
-	}
+  static create() {
+    const logger = new LoggerService();
+    const userRepository = new UserRepositoryImpl();
+    const emailService = new EmailServiceImpl(new EmailProviderImpl());
+    const useCase = new CreateUserUseCase(userRepository, emailService);
+    return { useCase, logger };
+  }
 }
 ```
 
@@ -411,26 +419,26 @@ export class CreateUserFactory {
 
 ```typescript
 export class UserQueryBuilder extends BaseQueryBuilder {
-	withEmail(email: string): UserQueryBuilder {
-		this.mustClauses.push({
-			term: { email: email }
-		});
-		return this;
-	}
+  withEmail(email: string): UserQueryBuilder {
+    this.mustClauses.push({
+      term: { email: email },
+    });
+    return this;
+  }
 
-	withActiveStatus(isActive: boolean): UserQueryBuilder {
-		this.mustClauses.push({
-			term: { isActive: isActive }
-		});
-		return this;
-	}
+  withActiveStatus(isActive: boolean): UserQueryBuilder {
+    this.mustClauses.push({
+      term: { isActive: isActive },
+    });
+    return this;
+  }
 
-	withNameContaining(name: string): UserQueryBuilder {
-		this.mustClauses.push({
-			match: { name: name }
-		});
-		return this;
-	}
+  withNameContaining(name: string): UserQueryBuilder {
+    this.mustClauses.push({
+      match: { name: name },
+    });
+    return this;
+  }
 }
 ```
 
@@ -463,11 +471,11 @@ static async createUser(req: Request, res: Response, next: NextFunction) {
 
 ```typescript
 const userValidation = {
-	createUser: Joi.object({
-		name: Joi.string().required().min(2).max(100),
-		email: Joi.string().email().required(),
-		password: Joi.string().required().min(8)
-	})
+  createUser: Joi.object({
+    name: Joi.string().required().min(2).max(100),
+    email: Joi.string().email().required(),
+    password: Joi.string().required().min(8),
+  }),
 };
 
 export default userValidation;
@@ -476,45 +484,79 @@ export default userValidation;
 ### Route Example
 
 ```typescript
-router.post('/users', validator.body(userValidation.createUser), UserController.createUser);
+import { Router } from 'express';
+import { createValidator } from 'express-joi-validation';
+import userValidation from '../validation/user.validation';
+import { UserController } from '../controllers/user.controller';
+
+const router = Router();
+const validator = createValidator({ passError: true });
+
+router.post(
+  '/users',
+  validator.body(userValidation.createUser),
+  UserController.createUser.bind(UserController),
+);
+
+export { router };
+```
+
+### Modules Index Example
+
+```typescript
+import { Router } from 'express';
+import { router as userRouter } from './user/presentation/routes/user.routes';
+import { router as productRouter } from './product/presentation/routes/product.routes';
+import { errorHandler } from './shared/middleware/error-handler.middleware';
+
+const router = Router({ mergeParams: true });
+
+// Mount module routes
+router.use('/users', userRouter);
+router.use('/products', productRouter);
+
+// Add error handler middleware
+router.use(errorHandler);
+
+export default router;
 ```
 
 ### Mapper Example
 
 ```typescript
 export class UserMapper {
-	static toDomain(raw: any): User {
-		return User.create({
-			id: raw.id,
-			email: raw.email,
-			name: raw.name,
-			isActive: raw.is_active,
-			role: raw.role,
-			createdAt: new Date(raw.created_at),
-			updatedAt: new Date(raw.updated_at)
-		});
-	}
+  static toDomain(raw: any): User {
+    return User.create({
+      id: raw.id,
+      email: raw.email,
+      name: raw.name,
+      isActive: raw.is_active,
+      role: raw.role,
+      createdAt: new Date(raw.created_at),
+      updatedAt: new Date(raw.updated_at),
+    });
+  }
 
-	static toPersistence(user: User): any {
-		return {
-			id: user.getId(),
-			email: user.getEmail(),
-			name: user.getName(),
-			is_active: user.isActive(),
-			role: user.getRole(),
-			created_at: user.getCreatedAt().toISOString(),
-			updated_at: user.getUpdatedAt().toISOString()
-		};
-	}
+  static toPersistence(user: User): any {
+    return {
+      id: user.getId(),
+      email: user.getEmail(),
+      name: user.getName(),
+      is_active: user.isActive(),
+      role: user.getRole(),
+      created_at: user.getCreatedAt().toISOString(),
+      updated_at: user.getUpdatedAt().toISOString(),
+    };
+  }
 
-	static toDTO(user: User): UserDto {
-		return {
-			id: user.getId(),
-			email: user.getEmail(),
-			name: user.getName(),
-			role: user.getRole()
-		};
-	}
+  static toDTO(user: User): UserDto {
+    return {
+      id: user.getId(),
+      email: user.getEmail(),
+      name: user.getName(),
+      role: user.getRole(),
+    };
+  }
 }
 ```
 
@@ -522,18 +564,18 @@ export class UserMapper {
 
 ```typescript
 export class UserDetailsMapper {
-	static toDto(users: User[], roles: Role[]): UserDetailsDto[] {
-		return users.map((user) => {
-			const userRoles = roles.filter((role) => role.getUserId() === user.getId());
+  static toDto(users: User[], roles: Role[]): UserDetailsDto[] {
+    return users.map((user) => {
+      const userRoles = roles.filter((role) => role.getUserId() === user.getId());
 
-			return {
-				id: user.getId(),
-				name: user.getName(),
-				email: user.getEmail(),
-				roles: userRoles.map((role) => role.getName())
-			};
-		});
-	}
+      return {
+        id: user.getId(),
+        name: user.getName(),
+        email: user.getEmail(),
+        roles: userRoles.map((role) => role.getName()),
+      };
+    });
+  }
 }
 ```
 
@@ -541,57 +583,57 @@ export class UserDetailsMapper {
 
 1. **Dependency Injection**: Use constructor injection for dependencies
 
-    - Makes testing easier
-    - Makes dependencies explicit
-    - Avoids hidden coupling
+   - Makes testing easier
+   - Makes dependencies explicit
+   - Avoids hidden coupling
 
 2. **Factory Pattern**: Use factories to create use cases with their dependencies
 
-    - Centralizes creation logic
-    - Simplifies client code
-    - Makes dependency network explicit
+   - Centralizes creation logic
+   - Simplifies client code
+   - Makes dependency network explicit
 
 3. **Single Responsibility**: Each class should have a single responsibility
 
-    - Enhances maintainability
-    - Reduces complexity
-    - Makes testing easier
+   - Enhances maintainability
+   - Reduces complexity
+   - Makes testing easier
 
 4. **Dependency Rule**: Dependencies should only point inward (domain → application → infrastructure/presentation)
 
-    - Makes the system more flexible
-    - Protects business rules from external changes
-    - Facilitates testing
+   - Makes the system more flexible
+   - Protects business rules from external changes
+   - Facilitates testing
 
 5. **DTOs**: Use Data Transfer Objects to pass data between layers
 
-    - Decouples layers
-    - Controls what data is exposed
-    - Adapts data to client needs
+   - Decouples layers
+   - Controls what data is exposed
+   - Adapts data to client needs
 
 6. **Validation**: Validate input at the presentation layer
 
-    - Ensures data integrity
-    - Fails fast
-    - Reduces domain layer complexity
+   - Ensures data integrity
+   - Fails fast
+   - Reduces domain layer complexity
 
 7. **Error Handling**: Use try/catch blocks in controllers and log errors appropriately
 
-    - Improves user experience
-    - Facilitates debugging
-    - Maintains system stability
+   - Improves user experience
+   - Facilitates debugging
+   - Maintains system stability
 
 8. **Immutability**: Prefer immutable objects, especially in the domain layer
 
-    - Reduces bugs from unexpected state changes
-    - Simplifies concurrency
-    - Makes code reasoning easier
+   - Reduces bugs from unexpected state changes
+   - Simplifies concurrency
+   - Makes code reasoning easier
 
 9. **Base Classes**: Use base classes for common functionality
 
-    - Reduces duplication
-    - Standardizes patterns
-    - Simplifies implementation
+   - Reduces duplication
+   - Standardizes patterns
+   - Simplifies implementation
 
 10. **Mappers**: Use dedicated mapper classes for transformations between layers
 

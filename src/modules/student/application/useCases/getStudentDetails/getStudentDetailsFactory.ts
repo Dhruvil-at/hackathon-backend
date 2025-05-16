@@ -1,4 +1,4 @@
-import { StudentRepositoryImpl } from 'src/modules/student/infrastructure/repositories/student.repository.impl';
+import { StudentRepositoryImpl } from '../../../infrastructure/repositories/student.repository.impl';
 import { GetStudentDetailsUseCase } from './getStudentDetails';
 
 export class GetStudentDetailsFactory {

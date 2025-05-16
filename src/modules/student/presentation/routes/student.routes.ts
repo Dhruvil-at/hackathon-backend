@@ -1,10 +1,15 @@
 import { Router } from 'express';
+import { createValidator } from 'express-joi-validation';
+import studentValidation from '../validation/student.validation';
 import { StudentController } from '../controllers/student.controller';
 
-export class StudentRoutes {
-  public static configure(router: Router): void {
-    const controller = new StudentController();
+const router = Router();
+const validator = createValidator({ passError: true });
 
-    router.get('/students', controller.getStudentDetails);
-  }
-}
+router.get(
+  '/',
+  validator.query(studentValidation.getStudentDetails),
+  StudentController.getStudentDetails.bind(StudentController),
+);
+
+export { router };

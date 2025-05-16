@@ -6,8 +6,7 @@ import hpp from 'hpp';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { TokenIndexer } from 'morgan';
-import publicRoutes from './routes/public.routes';
-import internalRoutes from './routes/internal.routes';
+import routes from './modules/index';
 
 class App {
   public app: express.Application;
@@ -118,16 +117,7 @@ class App {
       }),
     );
 
-    // Public routes
-    this.app.use('/api/public', publicRoutes);
-
-    // Internal routes
-    this.app.use('/api/internal', internalRoutes);
-
-    // Default API route
-    this.app.use('/api', (_req: Request, res: Response) => {
-      res.json({ message: 'Welcome to the API' });
-    });
+    this.app.use('/api/public', routes);
   }
 
   private initializeErrorHandling() {
