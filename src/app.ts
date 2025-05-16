@@ -122,8 +122,31 @@ class App {
 
   private initializeErrorHandling() {
     // Error handling middleware
-    this.app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-      console.error(err.stack);
+    this.app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
+      // Format error log similar to the regular request logs
+      const timestamp = new Date().toISOString();
+      const errorLog = [
+        `[${req.ip || 'unknown'}]`,
+        `[${timestamp}]`,
+        `["${req.method}`,
+        `${req.protocol}://${req.hostname}${req.url}`,
+        `HTTP/${req.httpVersion || '1.1'}"]`,
+        `[500]`, // Assuming server error
+        `[ERROR]`,
+        '-',
+        `[${Date.now() - (res.locals.startEpoch || Date.now())}]`,
+        'ms',
+        `[${req.headers['user-agent'] || 'unknown'}]`,
+        `ERROR: ${err.message}`,
+      ].join(' ');
+
+      console.error(errorLog);
+
+      // Add stack trace in development
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(err.stack);
+      }
+
       res.status(500).json({
         status: 'error',
         message: 'Something went wrong!',
