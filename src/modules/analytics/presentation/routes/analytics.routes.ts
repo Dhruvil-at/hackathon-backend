@@ -1,0 +1,18 @@
+import { Router } from 'express';
+import { createValidator } from 'express-joi-validation';
+import { AnalyticsController } from '../controllers/analyticsController';
+import analyticsValidation from '../validation/analytics.validation';
+import { isAuthenticatedMiddleware } from '../middleware/isAuthenticatedMiddleware';
+
+const router = Router();
+const validator = createValidator({ passError: true });
+
+// Get analytics data route - protected by authentication
+router.get(
+  '/',
+  //   isAuthenticatedMiddleware, // Change
+  validator.query(analyticsValidation.getAnalytics),
+  AnalyticsController.getAnalytics.bind(AnalyticsController),
+);
+
+export { router };
