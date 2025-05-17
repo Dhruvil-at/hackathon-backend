@@ -78,4 +78,25 @@ export class UserRepositoryImpl extends BaseRepository implements UserRepository
 
     await this.executeQuery('deleteUser', query, [now, id]);
   }
+
+  async searchByName(searchText: string): Promise<User[]> {
+    const searchParam = `${searchText}%`;
+
+    const query = `
+      SELECT * FROM hackathon.user 
+      WHERE (firstName LIKE ? OR lastName LIKE ?) 
+      AND deleted_at IS NULL
+    `;
+
+    const result = await this.executeQuery<any[]>('searchUsersByName', query, [
+      searchParam,
+      searchParam,
+    ]);
+
+    if (result && result.length > 0) {
+      return result.map((user) => UserMapper.toDomain(user));
+    }
+
+    return [];
+  }
 }

@@ -6,4 +6,5 @@ export interface UserRepository {
   save(user: User): Promise<void>;
   update(user: User): Promise<void>;
   delete(id: number): Promise<void>;
+  searchByName(searchText: string): Promise<User[]>;
 }
