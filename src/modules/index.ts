@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { router as studentRouter } from './student/presentation/routes/student.routes';
 import { router as authRouter } from './auth/presentation/routes/auth.routes';
 import { router as teamRouter } from './teams/presentation/routes/team.routes';
+import { categoryRoutes } from './categories';
 
 const router = Router({ mergeParams: true });
 
@@ -9,5 +10,6 @@ const router = Router({ mergeParams: true });
 router.use('/students', studentRouter);
 router.use('/auth', authRouter);
 router.use('/teams', teamRouter);
+router.use('/categories', categoryRoutes);
 
 export default router;
