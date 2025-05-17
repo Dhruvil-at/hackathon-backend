@@ -43,11 +43,12 @@ src/clean-architecture/
 │       │   ├── controllers/  # Request handlers
 │       │   ├── interfaces/   # Presentation-specific interfaces
 │       │   ├── routes/       # API routes
-│       │   ├── middleware/   # Express middleware
 │       │   └── validation/   # Input validation schemas
 │       └── repositories/     # Repository interfaces
 └── shared/                   # Shared utilities and services
     ├── factories/            # Cross-cutting factories
+    ├── middleware/           # Application-level middleware
+    │   └── error-handler.ts  # Centralized error handling
     ├── services/             # Shared services
     └── utils/                # Utility functions
 ```
@@ -96,6 +97,15 @@ Handles HTTP requests, input validation, and response formatting.
 - **Validation**: Input validation logic
 - **View Models/DTOs**: Specialized data structures for the UI
 - **Interfaces**: Type definitions for request parameters
+
+### 6. Shared Layer
+
+Contains cross-cutting concerns that are used across multiple modules.
+
+- **Middleware**: Application-level middleware including centralized error handling
+- **Utilities**: Helper functions and common utilities
+- **Services**: Shared service implementations that are used by multiple modules
+- **Factories**: Factory functions for creating common objects
 
 ## Implementation Process
 
@@ -171,15 +181,13 @@ Handles HTTP requests, input validation, and response formatting.
 - Define routes in `presentation/routes`
 - Implement controllers with static methods in `presentation/controllers`
 - Add validation schemas in `presentation/validation`
-- Create middleware for error handling in `presentation/middleware`
 - Use the express-joi-validation library for request validation
-- Implement error handlers for validation and other errors
+- Throw appropriate errors and let the centralized error handling middleware handle them
 
 ### 9. Configure Module Exports
 
 - Update the main `modules/index.ts` file to import and export all module routes
 - Mount routes with appropriate base paths
-- Configure middleware for error handling
 
 ## Code Examples
 
@@ -507,16 +515,12 @@ export { router };
 import { Router } from 'express';
 import { router as userRouter } from './user/presentation/routes/user.routes';
 import { router as productRouter } from './product/presentation/routes/product.routes';
-import { errorHandler } from './shared/middleware/error-handler.middleware';
 
 const router = Router({ mergeParams: true });
 
 // Mount module routes
 router.use('/users', userRouter);
 router.use('/products', productRouter);
-
-// Add error handler middleware
-router.use(errorHandler);
 
 export default router;
 ```
@@ -577,8 +581,6 @@ export class UserDetailsMapper {
     });
   }
 }
-```
-
 ## Best Practices
 
 1. **Dependency Injection**: Use constructor injection for dependencies
@@ -740,3 +742,4 @@ When adding a new feature:
 12. **Complex Use Case Classes**: Break down complex use cases into smaller, more manageable ones
 13. **Business Logic in Mappers**: Keep mappers focused only on data transformation
 14. **Exposing Internal State**: Don't expose entity properties directly; use getters and methods
+```

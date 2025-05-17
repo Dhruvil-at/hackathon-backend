@@ -44,16 +44,22 @@ This codebase follows a Clean Architecture approach that separates concerns into
 - Contains controllers with static methods
 - Implements input validation using libraries like Joi
 - Defines routes with validators
-- Uses middleware for error handling
 - Uses static controller methods with binding
+- Throws appropriate errors for centralized handling
+
+### 6. Shared Layer
+- Contains cross-cutting concerns
+- Houses centralized error handling
+- Provides utilities and common services
+- Includes application-level middleware
 
 ## Module Organization
 
 - Each module is organized by feature domain (e.g., users, products)
 - No individual module index files, instead use a centralized modules/index.ts
 - The main modules index file imports all routes and exports them
-- Routes are mounted with their appropriate base paths
-- Error handling middleware is configured at the module level
+- Routes are mounted with appropriate base paths
+- Error handling is implemented at the application level, not in individual modules
 
 ## Implementation Process
 
@@ -65,6 +71,7 @@ This codebase follows a Clean Architecture approach that separates concerns into
 6. Create controllers with static methods
 7. Define routes with validation middleware
 8. Configure the central modules index file
+9. Implement application-level error handling
 
 ## Router Format
 Routes should be defined using validators and exported directly:
@@ -86,21 +93,12 @@ router.get(
 export { router };
 ```
 
-## Modules Index Format
-The central modules/index.ts should mount all module routes:
+## Error Handling
+Error handling is centralized at the application level:
 ```javascript
-import { Router } from 'express';
-import { router as moduleRouter } from './module/presentation/routes/module.routes';
-
-const router = Router({ mergeParams: true });
-
-// Mount module routes
-router.use('/module-endpoint', moduleRouter);
-
-// Add error handler middleware
-router.use(errorHandler);
-
-export default router;
+// In app.ts, after all routes are defined
+app.use(routes);
+app.use(errorHandler);
 ```
 
 ## Reference
