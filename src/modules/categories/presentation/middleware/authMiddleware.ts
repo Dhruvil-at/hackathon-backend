@@ -8,7 +8,7 @@ export class AuthMiddleware {
   static isAuthenticated(req: Request, res: Response, next: NextFunction): void {
     const authReq = req as AuthRequest;
 
-    if (!authReq.session.isAuthenticated || !authReq.session.user) {
+    if (!authReq.user) {
       res.status(401).json({
         success: false,
         message: 'Unauthorized. Please login to access this resource.',
@@ -28,7 +28,7 @@ export class AuthMiddleware {
     const authReq = req as AuthRequest;
 
     // First ensure the user is authenticated
-    if (!authReq.session.isAuthenticated || !authReq.session.user) {
+    if (!authReq.user) {
       res.status(401).json({
         success: false,
         message: 'Unauthorized. Please login to access this resource.',
@@ -37,7 +37,7 @@ export class AuthMiddleware {
     }
 
     // Then check if the user has the ADMIN role
-    if (authReq.session.user.role !== 'ADMIN') {
+    if (authReq.user.role !== 'ADMIN') {
       res.status(403).json({
         success: false,
         message: 'Forbidden. Admin privileges required for this operation.',

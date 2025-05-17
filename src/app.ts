@@ -8,7 +8,6 @@ import swaggerUi from 'swagger-ui-express';
 import { TokenIndexer } from 'morgan';
 import routes from './modules/index';
 import { errorHandler } from './shared/middleware/error-handler';
-import { sessionMiddleware } from './shared/middleware/session-middleware';
 
 class App {
   public app: express.Application;
@@ -107,7 +106,7 @@ class App {
       }),
     );
 
-    this.app.use(sessionMiddleware);
+    // Session middleware removed - using JWT for authentication
   }
 
   private initializeRoutes() {

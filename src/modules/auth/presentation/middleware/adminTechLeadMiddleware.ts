@@ -5,8 +5,11 @@ export const adminTechLeadMiddleware = (req: Request, res: Response, next: NextF
   try {
     const authReq = req as AuthRequest;
 
+    // Get user from JWT token
+    const user = authReq.user;
+
     // Check if user is authenticated
-    if (!authReq.session.isAuthenticated || !authReq.session.user) {
+    if (!user) {
       return res.status(401).json({
         success: false,
         message: 'Authentication required',
@@ -14,7 +17,7 @@ export const adminTechLeadMiddleware = (req: Request, res: Response, next: NextF
     }
 
     // Check if user has ADMIN or TECH_LEAD role
-    if (authReq.session.user.role !== 'ADMIN' && authReq.session.user.role !== 'TECH_LEAD') {
+    if (user.role !== 'ADMIN' && user.role !== 'TECH_LEAD') {
       return res.status(403).json({
         success: false,
         message: 'Forbidden. Admin or Tech Lead privileges required for this operation.',
