@@ -29,9 +29,6 @@ export class SignupUseCaseImpl {
         password: request.password, // In a real app, you'd hash the password here
         role: UserRole.TEAM_MEMBER, // As per requirement, signup is only for team members
         teamId: request.teamId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deletedAt: null,
       };
 
       // Create user entity

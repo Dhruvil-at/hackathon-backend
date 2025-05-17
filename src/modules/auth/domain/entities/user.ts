@@ -8,17 +8,15 @@ export interface UserProps {
   password: string;
   role: UserRole;
   teamId: number | null;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date | null;
 }
 
 export class User {
   private props: UserProps;
 
-  private constructor(props: UserProps) {
-    this.props = props;
-  }
+  private constructor() {}
 
   static create(props: UserProps): User {
     // Domain validation
@@ -30,7 +28,9 @@ export class User {
       throw new Error('First name must be at least 2 characters');
     }
 
-    return new User(props);
+    const user = new User();
+    user.props = props;
+    return user;
   }
 
   // Getters
@@ -62,15 +62,15 @@ export class User {
     return this.props.teamId;
   }
 
-  getCreatedAt(): Date {
+  getCreatedAt(): Date | undefined {
     return this.props.createdAt;
   }
 
-  getUpdatedAt(): Date {
+  getUpdatedAt(): Date | undefined {
     return this.props.updatedAt;
   }
 
-  getDeletedAt(): Date | null {
+  getDeletedAt(): Date | null | undefined {
     return this.props.deletedAt;
   }
 

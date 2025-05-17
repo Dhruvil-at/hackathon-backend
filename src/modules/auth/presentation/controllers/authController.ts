@@ -58,7 +58,7 @@ export class AuthController {
         return res.status(200).json({
           success: true,
           message: 'User with this email already exists',
-          data: { email: result.email, userExists: true },
+          data: { ...result },
         });
       }
 
