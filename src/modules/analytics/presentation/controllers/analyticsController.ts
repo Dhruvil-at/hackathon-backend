@@ -25,6 +25,11 @@ export class AnalyticsController {
           name: category.name,
           kudosCount: category.kudosCount,
         })),
+        stats: {
+          totalKudos: result.stats.totalKudos,
+          totalTeams: result.stats.totalTeams,
+          totalCategories: result.stats.totalCategories,
+        },
         timePeriod: result.timePeriod,
       };
 

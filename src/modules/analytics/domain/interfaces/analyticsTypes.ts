@@ -17,3 +17,9 @@ export interface TopCategory {
   name: string;
   kudosCount: number;
 }
+
+export interface Stats {
+  totalKudos: number;
+  totalTeams: number;
+  totalCategories: number;
+}
