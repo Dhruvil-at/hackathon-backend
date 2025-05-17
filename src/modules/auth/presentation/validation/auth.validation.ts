@@ -13,6 +13,10 @@ const authValidation = {
     password: Joi.string().required(),
     teamId: Joi.number().required(),
   }),
+
+  searchUsers: Joi.object({
+    searchText: Joi.string().required().min(1),
+  }),
 };
 
 export default authValidation;

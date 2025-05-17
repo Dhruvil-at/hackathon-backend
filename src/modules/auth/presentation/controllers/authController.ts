@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { LoginFactory } from '../../application/useCases/login/loginFactory';
 import { LogoutFactory } from '../../application/useCases/logout/logoutFactory';
 import { SignupFactory } from '../../application/useCases/signup/signupFactory';
+import { SearchUsersFactory } from '../../application/useCases/searchUsers/searchUsersFactory';
 import { AuthRequest } from '../interfaces/request';
 
 export class AuthController {
@@ -106,6 +107,44 @@ export class AuthController {
         message: error.message,
       });
       console.error('Logout error:', error);
+      next(error);
+      return;
+    }
+  }
+
+  static async searchUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const searchText = req.query.searchText as string;
+
+      // Create and execute use case
+      const searchUsersUseCase = SearchUsersFactory.create();
+      const result = await searchUsersUseCase.execute({ searchText });
+
+      // Handle when no users found
+      if (!result.found) {
+        return res.status(200).json({
+          success: true,
+          message: 'No users found matching the search criteria',
+          data: {
+            users: [],
+            count: 0,
+          },
+        });
+      }
+
+      // Return search results
+      res.status(200).json({
+        success: true,
+        message: `Found ${result.count} user(s) matching the search criteria`,
+        data: result,
+      });
+      return;
+    } catch (error) {
+      res.status(200).json({
+        success: false,
+        message: error.message,
+      });
+      console.error('Search users error:', error);
       next(error);
       return;
     }

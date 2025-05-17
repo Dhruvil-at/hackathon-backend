@@ -3,6 +3,7 @@ import { createValidator } from 'express-joi-validation';
 import authValidation from '../validation/auth.validation';
 import { AuthController } from '../controllers/authController';
 import { isAlreadyLoggedInMiddleware } from '../middleware/isAlreadyLoggedInMiddleware';
+import { adminTechLeadMiddleware } from '../middleware/adminTechLeadMiddleware';
 
 const router = Router();
 // Set passError to true to ensure validation errors are passed to the error handler
@@ -25,5 +26,13 @@ router.post(
 
 // Logout route
 router.post('/logout', AuthController.logout.bind(AuthController));
+
+// Search users route (accessible to ADMIN and TECH_LEAD only)
+router.get(
+  '/users/search',
+  adminTechLeadMiddleware,
+  validator.query(authValidation.searchUsers),
+  AuthController.searchUsers.bind(AuthController),
+);
 
 export { router };
