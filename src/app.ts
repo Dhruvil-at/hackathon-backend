@@ -74,7 +74,11 @@ class App {
           return callback(null, true);
         }
         // Add your production domains here
-        const allowedOrigins = ['http://localhost:3000', 'http://localhost:8080'];
+        const allowedOrigins = [
+          'http://localhost:5173',
+          'http://localhost:3000',
+          'https://hackthon-frontend-omega.vercel.app/',
+        ];
         if (allowedOrigins.indexOf(origin) === -1) {
           return callback(new Error('CORS policy violation'), false);
         }

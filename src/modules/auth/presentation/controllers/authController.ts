@@ -8,6 +8,7 @@ export class AuthController {
     try {
       // Check if user is already logged in
       const authReq = req as AuthRequest;
+      
       if (authReq.session.isAuthenticated && authReq.session.user) {
         return res.status(200).json({
           success: true,
