@@ -3,6 +3,7 @@ import { createValidator } from 'express-joi-validation';
 import kudosValidation from '../validation/kudos.validation';
 import { KudosController } from '../controllers/kudos.controller';
 import { isTechLead } from '../middleware/role-check.middleware';
+import { jwtAuthMiddleware } from '../middleware/jwtAuthMiddleware';
 
 const router = Router();
 const validator = createValidator({ passError: true });
@@ -17,6 +18,7 @@ router.get(
 // POST /api/kudos - Create new kudos (tech lead only)
 router.post(
   '/',
+  jwtAuthMiddleware,
   isTechLead,
   validator.body(kudosValidation.createKudos),
   KudosController.createKudos.bind(KudosController),

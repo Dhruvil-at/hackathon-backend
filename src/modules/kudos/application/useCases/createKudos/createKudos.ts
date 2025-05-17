@@ -10,6 +10,7 @@ export class CreateKudosUseCase {
       recipientId: dto.recipientId,
       categoryId: dto.categoryId,
       message: dto.message,
+      teamId: dto.teamId,
       createdBy: userId,
       createdAt: new Date(),
       updatedAt: new Date(),

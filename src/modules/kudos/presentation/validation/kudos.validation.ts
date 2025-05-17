@@ -4,6 +4,7 @@ const kudosValidation = {
   createKudos: Joi.object({
     recipientId: Joi.string().required().min(1).max(255),
     categoryId: Joi.number().required().positive().integer(),
+    teamId: Joi.number().required().positive().integer(),
     message: Joi.string().required().min(5).max(1000),
   }),
 

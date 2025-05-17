@@ -8,12 +8,13 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
     const kudosData = KudosMapper.toPersistence(kudos);
     const query = `
       INSERT INTO hackathon.kudos 
-      ( recipientId, categoryId, message, createdById, createdAt, updatedAt) 
-      VALUES (?, ?, ?, ?, ?, ?)
+      ( recipientId, categoryId, teamId, message, createdById, createdAt, updatedAt) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
       kudosData.recipientId,
       kudosData.categoryId,
+      kudosData.teamId,
       kudosData.message,
       kudosData.createdBy,
       kudosData.createdAt,
@@ -24,12 +25,12 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
   }
 
   async findById(id: string): Promise<Kudos | null> {
-    const query = `SELECT k.id,k.recipientId,k.message,k.categoryId,k.createdAt,k.updatedAt,t.id as teamId, t.name as teamName, c.name as categoryName, 
+    const query = `SELECT k.id,k.recipientId,k.message,k.categoryId,k.createdAt,k.updatedAt,k.teamId, t.name as teamName, c.name as categoryName, 
                    CONCAT(u.firstName, ' ', u.lastName) as recipientName,
                    CONCAT(creator.firstName, ' ', creator.lastName) as createdByName 
                    FROM hackathon.kudos k 
                    LEFT JOIN hackathon.user u ON k.recipientId = u.id 
-                   LEFT JOIN hackathon.teams t ON u.teamId = t.id 
+                   LEFT JOIN hackathon.teams t ON k.teamId = t.id 
                    LEFT JOIN hackathon.categories c ON k.categoryId = c.id 
                    LEFT JOIN hackathon.user creator ON k.createdById = creator.id
                    WHERE k.id = ? AND k.deletedAt IS NULL`;
@@ -51,7 +52,7 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
       LEFT JOIN hackathon.user u ON k.recipientId = u.id
       WHERE k.deletedAt IS NULL
       ${filters?.recipientId ? 'AND k.recipientId LIKE ?' : ''}
-      ${filters?.teamId ? 'AND u.teamId = ?' : ''}
+      ${filters?.teamId ? 'AND k.teamId = ?' : ''}
       ${filters?.categoryId ? 'AND k.categoryId = ?' : ''}
     `;
 
@@ -64,12 +65,12 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
     const total = countRows[0].total;
 
     // Data query
-    let query = `SELECT k.id,k.recipientId,k.message,k.categoryId,k.createdAt,k.updatedAt,t.id as teamId, t.name as teamName, c.name as categoryName,
+    let query = `SELECT k.id,k.recipientId,k.message,k.categoryId,k.createdAt,k.updatedAt,k.teamId, t.name as teamName, c.name as categoryName,
       CONCAT(u.firstName, ' ', u.lastName) as recipientName,
       CONCAT(creator.firstName, ' ', creator.lastName) as createdByName
       FROM hackathon.kudos k
       LEFT JOIN hackathon.user u ON k.recipientId = u.id
-      LEFT JOIN hackathon.teams t ON u.teamId = t.id
+      LEFT JOIN hackathon.teams t ON k.teamId = t.id
       LEFT JOIN hackathon.categories c ON k.categoryId = c.id
       LEFT JOIN hackathon.user creator ON k.createdById = creator.id
       WHERE k.deletedAt IS NULL`;
@@ -110,12 +111,12 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
   }
 
   async search(query: string, filters?: KudosFilters): Promise<{ kudos: Kudos[]; total: number }> {
-    let sqlQuery = `SELECT k.id,k.recipientId,k.message,k.categoryId,k.createdAt,k.updatedAt, t.id as teamId, t.name as teamName, c.name as categoryName,
+    let sqlQuery = `SELECT k.id,k.recipientId,k.message,k.categoryId,k.createdAt,k.updatedAt, k.teamId, t.name as teamName, c.name as categoryName,
       CONCAT(u.firstName, ' ', u.lastName) as recipientName,
       CONCAT(creator.firstName, ' ', creator.lastName) as createdByName,
       k.recipientId as recipientId FROM hackathon.kudos k
       LEFT JOIN hackathon.user u ON k.recipientId = u.id
-      LEFT JOIN hackathon.teams t ON u.teamId = t.id
+      LEFT JOIN hackathon.teams t ON k.teamId = t.id
       LEFT JOIN hackathon.categories c ON k.categoryId = c.id
       LEFT JOIN hackathon.user creator ON k.createdById = creator.id
       WHERE k.deletedAt IS NULL AND (u.firstName LIKE ? OR u.lastName LIKE ? OR k.message LIKE ?)`;
