@@ -8,7 +8,7 @@ export const isAuthenticatedMiddleware = (
 ): void => {
   const authReq = req as AuthRequest;
 
-  if (!authReq.session.isAuthenticated || !authReq.session.user) {
+  if (!authReq.user) {
     res.status(401).json({
       success: false,
       message: 'Unauthorized. Please login to access this resource.',

@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { createValidator } from 'express-joi-validation';
 import { AnalyticsController } from '../controllers/analyticsController';
 import analyticsValidation from '../validation/analytics.validation';
-import { isAuthenticatedMiddleware } from '../middleware/isAuthenticatedMiddleware';
 
 const router = Router();
 const validator = createValidator({ passError: true });

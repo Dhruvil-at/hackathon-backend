@@ -11,7 +11,11 @@ export class KudosController {
       const authReq = req as AuthRequest;
 
       const { useCase } = CreateKudosFactory.create();
-      const user = authReq.session.user as { id: number };
+      const user = authReq.user;
+
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
 
       await useCase.execute(req.body, user.id);
 

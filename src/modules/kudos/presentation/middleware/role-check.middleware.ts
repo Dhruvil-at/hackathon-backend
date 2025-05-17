@@ -3,10 +3,10 @@ import { AuthRequest } from 'src/modules/auth/presentation/interfaces/request';
 
 export const isTechLead = (req: Request, res: Response, next: NextFunction) => {
   const authReq = req as AuthRequest;
-  const user = authReq.session.user as { id: number; role: string };
+  const user = authReq.user;
 
   if (!user) {
-    res.status(200).json({
+    res.status(401).json({
       success: false,
       message: 'User not authenticated',
     });
@@ -14,7 +14,7 @@ export const isTechLead = (req: Request, res: Response, next: NextFunction) => {
   }
 
   if (user.role !== 'TECH_LEAD' && user.role !== 'ADMIN') {
-    res.status(200).json({
+    res.status(403).json({
       success: false,
       message: 'Only Tech Leads can create kudos',
     });
