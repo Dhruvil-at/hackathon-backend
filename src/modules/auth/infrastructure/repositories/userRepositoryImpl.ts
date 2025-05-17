@@ -33,8 +33,8 @@ export class UserRepositoryImpl extends BaseRepository implements UserRepository
 
     const query = `
       INSERT INTO hackathon.user 
-      (firstName, lastName, email, password, role, teamId, created_at, updated_at) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      (firstName, lastName, email, password, role, teamId) 
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     await this.executeQuery('saveUser', query, [
@@ -44,8 +44,6 @@ export class UserRepositoryImpl extends BaseRepository implements UserRepository
       userData.password,
       userData.role,
       userData.teamId,
-      userData.created_at,
-      userData.updated_at,
     ]);
   }
 
@@ -59,8 +57,7 @@ export class UserRepositoryImpl extends BaseRepository implements UserRepository
           email = ?, 
           password = ?, 
           role = ?, 
-          teamId = ?, 
-          updated_at = ? 
+          teamId = ?
       WHERE id = ?
     `;
 
@@ -71,15 +68,14 @@ export class UserRepositoryImpl extends BaseRepository implements UserRepository
       userData.password,
       userData.role,
       userData.teamId,
-      userData.updated_at,
       userData.id,
     ]);
   }
 
   async delete(id: number): Promise<void> {
     const now = new Date();
-    const query = 'UPDATE user SET deleted_at = ?, updated_at = ? WHERE id = ?';
+    const query = 'UPDATE user SET deleted_at = ? WHERE id = ?';
 
-    await this.executeQuery('deleteUser', query, [now, now, id]);
+    await this.executeQuery('deleteUser', query, [now, id]);
   }
 }

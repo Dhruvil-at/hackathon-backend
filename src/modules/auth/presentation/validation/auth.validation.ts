@@ -9,6 +9,14 @@ const authValidation = {
   logout: Joi.object({
     // No validation needed for logout as it uses session data
   }),
+
+  signup: Joi.object({
+    firstName: Joi.string().required(),
+    lastName: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+    teamId: Joi.number().required(),
+  }),
 };
 
 export default authValidation;
