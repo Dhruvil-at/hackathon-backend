@@ -27,7 +27,8 @@
     "joi": "^17.13.3",
     "morgan": "^1.10.0",
     "mysql2": "^3.9.2",
-    "swagger-ui-express": "^4.6.3"
+    "swagger-ui-express": "^4.6.3",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
