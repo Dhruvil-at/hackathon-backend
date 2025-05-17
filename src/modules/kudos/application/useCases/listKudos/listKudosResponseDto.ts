@@ -16,7 +16,4 @@ export interface KudosItemDto {
 export interface ListKudosResponseDto {
   kudos: KudosItemDto[];
   total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
 }

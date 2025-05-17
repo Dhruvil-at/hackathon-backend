@@ -16,10 +16,11 @@ export class ListKudosUseCase {
       categoryId: dto.categoryId,
       page,
       limit,
+      sortOrder: dto.sortOrder,
     };
 
     const { kudos, total } = await this.kudosRepository.findAll(filters);
 
-    return ListKudosMapper.toDto(kudos, total, page, limit);
+    return ListKudosMapper.toDto(kudos, total);
   }
 }

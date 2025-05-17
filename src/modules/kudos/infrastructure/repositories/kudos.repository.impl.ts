@@ -24,7 +24,7 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
   }
 
   async findById(id: string): Promise<Kudos | null> {
-    const query = `SELECT k.id,k.recipientId,k.message,k.categoryId,t.id as teamId, t.name as teamName, c.name as categoryName, 
+    const query = `SELECT k.id,k.recipientId,k.message,k.categoryId,k.createdAt,k.updatedAt,t.id as teamId, t.name as teamName, c.name as categoryName, 
                    CONCAT(u.firstName, ' ', u.lastName) as recipientName,
                    CONCAT(creator.firstName, ' ', creator.lastName) as createdByName 
                    FROM hackathon.kudos k 
@@ -64,7 +64,7 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
     const total = countRows[0].total;
 
     // Data query
-    let query = `SELECT k.id,k.recipientId,k.message,k.categoryId,t.id as teamId, t.name as teamName, c.name as categoryName,
+    let query = `SELECT k.id,k.recipientId,k.message,k.categoryId,k.createdAt,k.updatedAt,t.id as teamId, t.name as teamName, c.name as categoryName,
       CONCAT(u.firstName, ' ', u.lastName) as recipientName,
       CONCAT(creator.firstName, ' ', creator.lastName) as createdByName
       FROM hackathon.kudos k
@@ -96,7 +96,9 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
     const limit = filters?.limit || 10;
     const offset = this.calculateOffset(page, limit);
 
-    query += ' ORDER BY k.createdat DESC LIMIT ? OFFSET ?';
+    // Set default sort order to DESC if not provided
+    const sortOrder = filters?.sortOrder || 'desc';
+    query += ` ORDER BY k.createdAt ${sortOrder.toUpperCase()} LIMIT ? OFFSET ?`;
     params.push(limit, offset);
 
     const rows = await this.executeQuery<any[]>('findAllKudos', query, params);
@@ -108,7 +110,7 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
   }
 
   async search(query: string, filters?: KudosFilters): Promise<{ kudos: Kudos[]; total: number }> {
-    let sqlQuery = `SELECT k.id,k.recipientId,k.message,k.categoryId, t.id as teamId, t.name as teamName, c.name as categoryName,
+    let sqlQuery = `SELECT k.id,k.recipientId,k.message,k.categoryId,k.createdAt,k.updatedAt, t.id as teamId, t.name as teamName, c.name as categoryName,
       CONCAT(u.firstName, ' ', u.lastName) as recipientName,
       CONCAT(creator.firstName, ' ', creator.lastName) as createdByName,
       k.recipientId as recipientId FROM hackathon.kudos k
@@ -131,7 +133,7 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
     }
 
     // Always limit to 10 records
-    sqlQuery += ' ORDER BY k.createdat DESC LIMIT 10';
+    sqlQuery += ' ORDER BY k.createdAt DESC LIMIT 10';
 
     const rows = await this.executeQuery<any[]>('searchKudos', sqlQuery, params);
 

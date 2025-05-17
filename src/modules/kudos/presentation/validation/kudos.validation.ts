@@ -17,6 +17,7 @@ const kudosValidation = {
     categoryId: Joi.number().optional().positive().integer(),
     page: Joi.number().optional().positive().integer().default(1),
     limit: Joi.number().optional().positive().integer().default(10),
+    sortOrder: Joi.string().optional().valid('asc', 'desc'),
   }),
 
   searchKudos: Joi.object({

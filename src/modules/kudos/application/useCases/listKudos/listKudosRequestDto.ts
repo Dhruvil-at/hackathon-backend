@@ -4,4 +4,5 @@ export interface ListKudosRequestDto {
   categoryId?: number;
   page?: number;
   limit?: number;
+  sortOrder?: 'asc' | 'desc';
 }

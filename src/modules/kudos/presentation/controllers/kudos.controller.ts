@@ -62,6 +62,7 @@ export class KudosController {
         categoryId: req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined,
         page: req.query.page ? parseInt(req.query.page as string) : undefined,
         limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
+        sortOrder: req.query.sortOrder as 'asc' | 'desc' | undefined,
       };
       const result = await useCase.execute(dto);
 

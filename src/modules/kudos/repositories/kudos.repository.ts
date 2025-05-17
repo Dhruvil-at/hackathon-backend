@@ -6,6 +6,7 @@ export interface KudosFilters {
   categoryId?: number;
   page?: number;
   limit?: number;
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface KudosRepository {
