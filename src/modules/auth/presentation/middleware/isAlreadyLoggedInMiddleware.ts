@@ -12,7 +12,7 @@ export const isAlreadyLoggedInMiddleware = (
     res.status(200).json({
       success: true,
       message: 'User is already logged in',
-      data: authReq.session.user,
+      user: authReq.session.user,
     });
     return;
   }

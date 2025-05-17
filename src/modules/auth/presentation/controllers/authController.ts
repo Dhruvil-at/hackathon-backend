@@ -6,17 +6,6 @@ import { AuthRequest } from '../interfaces/request';
 export class AuthController {
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
-      // Check if user is already logged in
-      const authReq = req as AuthRequest;
-      
-      if (authReq.session.isAuthenticated && authReq.session.user) {
-        return res.status(200).json({
-          success: true,
-          message: 'User is already logged in',
-          data: authReq.session.user,
-        });
-      }
-
       const { email, password } = req.body;
 
       // Create and execute use case
@@ -24,6 +13,7 @@ export class AuthController {
       const result = await loginUseCase.execute({ email, password });
 
       // Set session data
+      const authReq = req as AuthRequest;
       authReq.session.user = result;
       authReq.session.isAuthenticated = true;
 
@@ -31,7 +21,7 @@ export class AuthController {
       res.status(200).json({
         success: true,
         message: 'Login successful',
-        data: result,
+        user: result,
       });
       return;
     } catch (error) {
