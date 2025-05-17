@@ -16,12 +16,9 @@ export class AnalyticsRepositoryImpl extends BaseRepository implements Analytics
         FROM 
           hackathon.teams t
         INNER JOIN 
-          hackathon.user u ON u.teamId = t.id
-        INNER JOIN 
-          hackathon.kudos k ON k.recipientId = u.id
+          hackathon.kudos k ON k.teamId = t.id
         WHERE 
           t.deleted_at IS NULL 
-          AND u.deleted_at IS NULL 
           AND k.deletedAt IS NULL
           ${timeConstraint}
         GROUP BY 

@@ -9,7 +9,6 @@ const validator = createValidator({ passError: true });
 // Get analytics data route - protected by authentication
 router.get(
   '/',
-  //   isAuthenticatedMiddleware, // Change
   validator.query(analyticsValidation.getAnalytics),
   AnalyticsController.getAnalytics.bind(AnalyticsController),
 );
