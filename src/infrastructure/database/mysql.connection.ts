@@ -9,10 +9,12 @@ export class MySQLConnection {
 
   private constructor() {
     const config: PoolOptions = {
-      host: process.env.MYSQL_HOST || 'localhost',
+      host:
+        process.env.MYSQL_HOST ||
+        'SG-avesta-hackathon-12569-mysql-master.servers.mongodirector.com',
       port: Number(process.env.MYSQL_PORT) || 3306,
-      user: process.env.MYSQL_USER || 'root',
-      password: process.env.MYSQL_PASSWORD || '',
+      user: process.env.MYSQL_USER || 'sgroot',
+      password: process.env.MYSQL_PASSWORD || 'EZkf3w4y8Z@Ydl96',
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
