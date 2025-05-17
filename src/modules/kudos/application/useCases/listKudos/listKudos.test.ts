@@ -72,8 +72,9 @@ describe('ListKudosUseCase', () => {
         recipientId: undefined,
         teamId: undefined,
         categoryId: undefined,
+        sortOrder: undefined,
       });
-      expect(ListKudosMapper.toDto).toHaveBeenCalledWith(mockKudos, 2, 1, 10);
+      expect(ListKudosMapper.toDto).toHaveBeenCalledWith(mockKudos, 2);
       expect(result).toEqual({
         kudos: [
           {
@@ -106,9 +107,6 @@ describe('ListKudosUseCase', () => {
           },
         ],
         total: 2,
-        page: 1,
-        limit: 10,
-        totalPages: 1,
       });
     });
 
@@ -133,8 +131,9 @@ describe('ListKudosUseCase', () => {
         categoryId: 1,
         page: 2,
         limit: 5,
+        sortOrder: undefined,
       });
-      expect(ListKudosMapper.toDto).toHaveBeenCalledWith([mockKudos[0]], 6, 2, 5);
+      expect(ListKudosMapper.toDto).toHaveBeenCalledWith([mockKudos[0]], 6);
       expect(result).toEqual({
         kudos: [
           {
@@ -153,9 +152,6 @@ describe('ListKudosUseCase', () => {
           },
         ],
         total: 6,
-        page: 2,
-        limit: 5,
-        totalPages: 2,
       });
     });
 
@@ -169,13 +165,10 @@ describe('ListKudosUseCase', () => {
 
       // Assert
       expect(mockKudosRepository.findAll).toHaveBeenCalled();
-      expect(ListKudosMapper.toDto).toHaveBeenCalledWith([], 0, 1, 10);
+      expect(ListKudosMapper.toDto).toHaveBeenCalledWith([], 0);
       expect(result).toEqual({
         kudos: [],
         total: 0,
-        page: 1,
-        limit: 10,
-        totalPages: 0,
       });
     });
 
