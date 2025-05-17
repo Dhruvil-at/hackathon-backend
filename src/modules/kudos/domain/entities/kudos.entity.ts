@@ -28,6 +28,10 @@ export class Kudos {
     return this.props.recipientId;
   }
 
+  getRecipientName(): string {
+    return this.props.recipientName || '';
+  }
+
   getTeamId(): number {
     return this.props.teamId || 0;
   }
@@ -49,6 +53,10 @@ export class Kudos {
 
   getCreatedBy(): number {
     return this.props.createdBy;
+  }
+
+  getCreatedByName(): string {
+    return this.props.createdByName || '';
   }
 
   getCreatedAt(): Date {

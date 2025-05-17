@@ -9,7 +9,7 @@ export interface KudosFilters {
 }
 
 export interface KudosRepository {
-  create(kudos: Kudos): Promise<Kudos>;
+  create(kudos: Kudos): Promise<void>;
   findById(id: string): Promise<Kudos | null>;
   findAll(filters?: KudosFilters): Promise<{ kudos: Kudos[]; total: number }>;
   search(query: string, filters?: KudosFilters): Promise<{ kudos: Kudos[]; total: number }>;

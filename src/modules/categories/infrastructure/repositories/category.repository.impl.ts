@@ -64,7 +64,7 @@ export class CategoryRepositoryImpl extends BaseRepository implements CategoryRe
   /**
    * Create a new category
    */
-  async create(category: Category): Promise<Category> {
+  async create(category: Category): Promise<void> {
     try {
       const categoryData = CategoryMapper.toPersistence(category);
 
@@ -73,9 +73,7 @@ export class CategoryRepositoryImpl extends BaseRepository implements CategoryRe
         VALUES (?)
       `;
 
-      const result = await this.executeQuery<any>('category-create', query, [categoryData.name]);
-
-      return this.findById(result.insertId) as Promise<Category>;
+      await this.executeQuery<any>('category-create', query, [categoryData.name]);
     } catch (error) {
       console.error('Error creating category:', error);
       // Check for duplicate name error
@@ -89,7 +87,7 @@ export class CategoryRepositoryImpl extends BaseRepository implements CategoryRe
   /**
    * Update an existing category
    */
-  async update(category: Category): Promise<Category> {
+  async update(category: Category): Promise<void> {
     try {
       if (!category.id) {
         throw new Error('Category ID is required for update');
@@ -104,8 +102,6 @@ export class CategoryRepositoryImpl extends BaseRepository implements CategoryRe
       `;
 
       await this.executeQuery('category-update', query, [categoryData.name, category.id]);
-
-      return this.findById(category.id) as Promise<Category>;
     } catch (error) {
       console.error('Error updating category:', error);
       // Check for duplicate name error

@@ -64,7 +64,7 @@ export class TeamRepositoryImpl extends BaseRepository implements TeamRepository
   /**
    * Create a new team
    */
-  async create(team: Team): Promise<Team> {
+  async create(team: Team): Promise<void> {
     try {
       const teamData = TeamMapper.toPersistence(team);
 
@@ -73,9 +73,7 @@ export class TeamRepositoryImpl extends BaseRepository implements TeamRepository
         VALUES (?)
       `;
 
-      const result = await this.executeQuery<any>('team-create', query, [teamData.name]);
-
-      return this.findById(result.insertId) as Promise<Team>;
+      await this.executeQuery<any>('team-create', query, [teamData.name]);
     } catch (error) {
       console.error('Error creating team:', error);
       // Check for duplicate name error
@@ -89,7 +87,7 @@ export class TeamRepositoryImpl extends BaseRepository implements TeamRepository
   /**
    * Update an existing team
    */
-  async update(team: Team): Promise<Team> {
+  async update(team: Team): Promise<void> {
     try {
       if (!team.id) {
         throw new Error('Team ID is required for update');
@@ -104,8 +102,6 @@ export class TeamRepositoryImpl extends BaseRepository implements TeamRepository
       `;
 
       await this.executeQuery('team-update', query, [teamData.name, team.id]);
-
-      return this.findById(team.id) as Promise<Team>;
     } catch (error) {
       console.error('Error updating team:', error);
       // Check for duplicate name error

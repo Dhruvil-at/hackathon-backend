@@ -13,13 +13,16 @@ export class KudosController {
       const { useCase } = CreateKudosFactory.create();
       const user = authReq.session.user as { id: number };
 
-      const result = await useCase.execute(req.body, user.id);
+      await useCase.execute(req.body, user.id);
 
       res.status(201).json({
         success: true,
-        data: result,
       });
     } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
       next(error);
     }
   }
@@ -37,6 +40,10 @@ export class KudosController {
         data: result,
       });
     } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
       next(error);
     }
   }
@@ -59,6 +66,10 @@ export class KudosController {
         data: result,
       });
     } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
       next(error);
     }
   }
@@ -80,6 +91,10 @@ export class KudosController {
         data: result,
       });
     } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
       next(error);
     }
   }

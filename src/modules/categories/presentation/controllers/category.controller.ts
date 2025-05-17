@@ -12,16 +12,14 @@ export class CategoryController {
 
       // Create and execute use case
       const createCategoryUseCase = CreateCategoryFactory.create();
-      const category = await createCategoryUseCase.execute({ name });
+      await createCategoryUseCase.execute({ name });
 
       res.status(201).json({
         success: true,
-        message: 'Category created successfully',
-        data: category,
       });
       return;
     } catch (error) {
-      res.status(200).json({
+      res.status(500).json({
         success: false,
         message: error.message,
       });
@@ -107,16 +105,14 @@ export class CategoryController {
 
       // Create and execute use case
       const updateCategoryUseCase = UpdateCategoryFactory.create();
-      const category = await updateCategoryUseCase.execute({ id, name });
+      await updateCategoryUseCase.execute({ id, name });
 
       res.status(200).json({
         success: true,
-        message: 'Category updated successfully',
-        data: category,
       });
       return;
     } catch (error) {
-      res.status(200).json({
+      res.status(500).json({
         success: false,
         message: error.message,
       });

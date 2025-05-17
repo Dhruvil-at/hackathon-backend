@@ -12,18 +12,15 @@ export class TeamController {
 
       // Create and execute use case
       const createTeamUseCase = CreateTeamFactory.create();
-      const team = await createTeamUseCase.execute({ name });
+      await createTeamUseCase.execute({ name });
 
       res.status(201).json({
         success: true,
-        message: 'Team created successfully',
-        data: team,
       });
       return;
     } catch (error) {
-      res.status(200).json({
+      res.status(500).json({
         success: false,
-        message: error.message,
       });
       console.error('Create team error:', error);
       next(error);
@@ -107,18 +104,15 @@ export class TeamController {
 
       // Create and execute use case
       const updateTeamUseCase = UpdateTeamFactory.create();
-      const team = await updateTeamUseCase.execute({ id, name });
+      await updateTeamUseCase.execute({ id, name });
 
       res.status(200).json({
         success: true,
-        message: 'Team updated successfully',
-        data: team,
       });
       return;
     } catch (error) {
-      res.status(200).json({
+      res.status(500).json({
         success: false,
-        message: error.message,
       });
       console.error('Update team error:', error);
       next(error);

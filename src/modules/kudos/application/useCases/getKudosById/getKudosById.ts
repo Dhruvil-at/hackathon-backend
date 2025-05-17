@@ -1,6 +1,7 @@
 import { KudosRepository } from '../../../repositories/kudos.repository';
 import { GetKudosByIdRequestDto } from './getKudosByIdRequestDto';
 import { GetKudosByIdResponseDto } from './getKudosByIdResponseDto';
+import { GetKudosByIdMapper } from './getKudosByIdMapper';
 import { HttpError } from '../../../../../shared/middleware/error-handler';
 
 export class GetKudosByIdUseCase {
@@ -13,17 +14,6 @@ export class GetKudosByIdUseCase {
       throw new HttpError('Kudos not found', 404);
     }
 
-    return {
-      id: kudos.getId(),
-      recipientId: kudos.getRecipientId(),
-      teamId: kudos.getTeamId(),
-      categoryId: kudos.getCategoryId(),
-      categoryName: kudos.getCategoryName(),
-      teamName: kudos.getTeamName(),
-      message: kudos.getMessage(),
-      createdBy: kudos.getCreatedBy(),
-      createdAt: kudos.getCreatedAt(),
-      updatedAt: kudos.getUpdatedAt(),
-    };
+    return GetKudosByIdMapper.toDto(kudos);
   }
 }

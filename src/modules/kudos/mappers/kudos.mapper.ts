@@ -6,15 +6,17 @@ export class KudosMapper {
     const props: KudosProps = {
       id: raw.id,
       recipientId: raw.recipientId,
-      teamId: raw.team_id,
+      recipientName: raw.recipientName,
+      teamId: raw.teamId,
       categoryId: raw.categoryId,
       categoryName: raw.categoryName,
       teamName: raw.teamName,
       message: raw.message,
-      createdBy: raw.created_by,
-      createdAt: new Date(raw.created_at),
-      updatedAt: new Date(raw.updated_at),
-      deletedAt: raw.deleted_at ? new Date(raw.deleted_at) : null,
+      createdBy: raw.createdBy,
+      createdByName: raw.createdByName,
+      createdAt: new Date(raw.createdAt),
+      updatedAt: new Date(raw.updatedAt),
+      deletedAt: raw.deletedAt ? new Date(raw.deletedAt) : null,
     };
 
     return Kudos.create(props);
@@ -24,13 +26,13 @@ export class KudosMapper {
     return {
       id: kudos.getId(),
       recipientId: kudos.getRecipientId(),
-      team_id: kudos.getTeamId(),
+      teamId: kudos.getTeamId(),
       categoryId: kudos.getCategoryId(),
       message: kudos.getMessage(),
-      created_by: kudos.getCreatedBy(),
-      created_at: kudos.getCreatedAt(),
-      updated_at: kudos.getUpdatedAt(),
-      deleted_at: kudos.getDeletedAt(),
+      createdBy: kudos.getCreatedBy(),
+      createdAt: kudos.getCreatedAt(),
+      updatedAt: kudos.getUpdatedAt(),
+      deletedAt: kudos.getDeletedAt(),
     };
   }
 
@@ -38,12 +40,14 @@ export class KudosMapper {
     return {
       id: kudos.getId(),
       recipientId: kudos.getRecipientId(),
+      recipientName: kudos.getRecipientName(),
       teamId: kudos.getTeamId(),
-      teamName: teamName,
+      teamName: teamName || kudos.getTeamName(),
       categoryId: kudos.getCategoryId(),
-      categoryName: categoryName,
+      categoryName: categoryName || kudos.getCategoryName(),
       message: kudos.getMessage(),
       createdBy: kudos.getCreatedBy(),
+      createdByName: kudos.getCreatedByName(),
       createdAt: kudos.getCreatedAt(),
       updatedAt: kudos.getUpdatedAt(),
     };

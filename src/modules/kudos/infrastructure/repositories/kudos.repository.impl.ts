@@ -4,7 +4,7 @@ import { KudosMapper } from '../../mappers/kudos.mapper';
 import { BaseRepository } from '../../../../infrastructure/database/base.repository';
 
 export class KudosRepositoryImpl extends BaseRepository implements KudosRepository {
-  async create(kudos: Kudos): Promise<Kudos> {
+  async create(kudos: Kudos): Promise<void> {
     const kudosData = KudosMapper.toPersistence(kudos);
     const query = `
       INSERT INTO hackathon.kudos 
@@ -15,21 +15,24 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
       kudosData.recipientId,
       kudosData.categoryId,
       kudosData.message,
-      kudosData.created_by,
-      kudosData.created_at,
-      kudosData.updated_at,
+      kudosData.createdBy,
+      kudosData.createdAt,
+      kudosData.updatedAt,
     ];
 
     await this.executeQuery('createKudos', query, params);
-    return kudos;
   }
 
   async findById(id: string): Promise<Kudos | null> {
-    const query = `SELECT k.*, t.name as teamName, c.name as categoryName FROM hackathon.kudos k 
-      LEFT JOIN hackathon.user u ON k.recipientId = u.id 
-      LEFT JOIN hackathon.teams t ON u.teamId = t.id 
-      LEFT JOIN hackathon.categories c ON k.categoryId = c.id 
-      WHERE k.id = ? AND k.deletedAt IS NULL`;
+    const query = `SELECT k.id,k.recipientId,k.message,k.categoryId,t.id as teamId, t.name as teamName, c.name as categoryName, 
+                   CONCAT(u.firstName, ' ', u.lastName) as recipientName,
+                   CONCAT(creator.firstName, ' ', creator.lastName) as createdByName 
+                   FROM hackathon.kudos k 
+                   LEFT JOIN hackathon.user u ON k.recipientId = u.id 
+                   LEFT JOIN hackathon.teams t ON u.teamId = t.id 
+                   LEFT JOIN hackathon.categories c ON k.categoryId = c.id 
+                   LEFT JOIN hackathon.user creator ON k.createdById = creator.id
+                   WHERE k.id = ? AND k.deletedAt IS NULL`;
 
     const rows = await this.executeQuery<any[]>('findKudosById', query, [id]);
 
@@ -41,12 +44,35 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
   }
 
   async findAll(filters?: KudosFilters): Promise<{ kudos: Kudos[]; total: number }> {
-    let query =
-      'SELECT k.*, t.name as teamName, c.name as categoryName FROM hackathon.kudos k ' +
-      'LEFT JOIN hackathon.user u ON k.recipientId = u.id ' +
-      'LEFT JOIN hackathon.teams t ON u.teamId = t.id ' +
-      'LEFT JOIN hackathon.categories c ON k.categoryId = c.id ' +
-      'WHERE k.deletedAt IS NULL';
+    // Get total count with a separate query
+    const countQuery = `
+      SELECT COUNT(*) as total 
+      FROM hackathon.kudos k
+      LEFT JOIN hackathon.user u ON k.recipientId = u.id
+      WHERE k.deletedAt IS NULL
+      ${filters?.recipientId ? 'AND k.recipientId LIKE ?' : ''}
+      ${filters?.teamId ? 'AND u.teamId = ?' : ''}
+      ${filters?.categoryId ? 'AND k.categoryId = ?' : ''}
+    `;
+
+    const countParams: any[] = [];
+    if (filters?.recipientId) countParams.push(`%${filters.recipientId}%`);
+    if (filters?.teamId) countParams.push(filters.teamId);
+    if (filters?.categoryId) countParams.push(filters.categoryId);
+
+    const countRows = await this.executeQuery<any[]>('countKudos', countQuery, countParams);
+    const total = countRows[0].total;
+
+    // Data query
+    let query = `SELECT k.id,k.recipientId,k.message,k.categoryId,t.id as teamId, t.name as teamName, c.name as categoryName,
+      CONCAT(u.firstName, ' ', u.lastName) as recipientName,
+      CONCAT(creator.firstName, ' ', creator.lastName) as createdByName
+      FROM hackathon.kudos k
+      LEFT JOIN hackathon.user u ON k.recipientId = u.id
+      LEFT JOIN hackathon.teams t ON u.teamId = t.id
+      LEFT JOIN hackathon.categories c ON k.categoryId = c.id
+      LEFT JOIN hackathon.user creator ON k.createdById = creator.id
+      WHERE k.deletedAt IS NULL`;
 
     const params: any[] = [];
 
@@ -65,14 +91,6 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
       params.push(filters.categoryId);
     }
 
-    // Get total count
-    const countQuery = query.replace(
-      'k.*, t.name as teamName, c.name as categoryName',
-      'COUNT(*) as total',
-    );
-    const countRows = await this.executeQuery<any[]>('countKudos', countQuery, params);
-    const total = countRows[0].total;
-
     // Add pagination
     const page = filters?.page || 1;
     const limit = filters?.limit || 10;
@@ -90,13 +108,15 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
   }
 
   async search(query: string, filters?: KudosFilters): Promise<{ kudos: Kudos[]; total: number }> {
-    let sqlQuery =
-      'SELECT k.*, t.name as teamName, c.name as categoryName, k.recipientId as recipientId FROM hackathon.kudos k ' +
-      'LEFT JOIN hackathon.user u ON k.recipientId = u.id ' +
-      'LEFT JOIN hackathon.teams t ON u.teamId = t.id ' +
-      'LEFT JOIN hackathon.categories c ON k.categoryId = c.id ' +
-      'WHERE k.deletedAt IS NULL AND ' +
-      '(u.firstName LIKE ? OR u.lastName LIKE ? OR k.message LIKE ?)';
+    let sqlQuery = `SELECT k.id,k.recipientId,k.message,k.categoryId, t.id as teamId, t.name as teamName, c.name as categoryName,
+      CONCAT(u.firstName, ' ', u.lastName) as recipientName,
+      CONCAT(creator.firstName, ' ', creator.lastName) as createdByName,
+      k.recipientId as recipientId FROM hackathon.kudos k
+      LEFT JOIN hackathon.user u ON k.recipientId = u.id
+      LEFT JOIN hackathon.teams t ON u.teamId = t.id
+      LEFT JOIN hackathon.categories c ON k.categoryId = c.id
+      LEFT JOIN hackathon.user creator ON k.createdById = creator.id
+      WHERE k.deletedAt IS NULL AND (u.firstName LIKE ? OR u.lastName LIKE ? OR k.message LIKE ?)`;
 
     const params: any[] = [`${query}%`, `${query}%`, `${query}%`];
 
@@ -110,27 +130,14 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
       params.push(filters.categoryId);
     }
 
-    // Get total count
-    const countQuery = sqlQuery.replace(
-      'k.*, t.name as teamName, c.name as categoryName, k.recipientId as recipientId',
-      'COUNT(*) as total',
-    );
-    const countRows = await this.executeQuery<any[]>('countSearchKudos', countQuery, params);
-    const total = countRows[0].total;
-
-    // Add pagination
-    const page = filters?.page || 1;
-    const limit = filters?.limit || 10;
-    const offset = this.calculateOffset(page, limit);
-
-    sqlQuery += ' ORDER BY k.createdat DESC LIMIT ? OFFSET ?';
-    params.push(limit, offset);
+    // Always limit to 10 records
+    sqlQuery += ' ORDER BY k.createdat DESC LIMIT 10';
 
     const rows = await this.executeQuery<any[]>('searchKudos', sqlQuery, params);
 
     return {
       kudos: rows.map((row) => KudosMapper.toDomain(row)),
-      total,
+      total: rows.length, // Just return the actual number of results
     };
   }
 }

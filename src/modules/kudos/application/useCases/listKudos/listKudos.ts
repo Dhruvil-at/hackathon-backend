@@ -1,6 +1,7 @@
 import { KudosRepository } from '../../../repositories/kudos.repository';
 import { ListKudosRequestDto } from './listKudosRequestDto';
-import { KudosItemDto, ListKudosResponseDto } from './listKudosResponseDto';
+import { ListKudosResponseDto } from './listKudosResponseDto';
+import { ListKudosMapper } from './listKudosMapper';
 
 export class ListKudosUseCase {
   constructor(private kudosRepository: KudosRepository) {}
@@ -19,27 +20,6 @@ export class ListKudosUseCase {
 
     const { kudos, total } = await this.kudosRepository.findAll(filters);
 
-    const kudosList: KudosItemDto[] = kudos.map((kudos) => ({
-      id: kudos.getId(),
-      recipientId: kudos.getRecipientId(),
-      teamId: kudos.getTeamId(),
-      categoryId: kudos.getCategoryId(),
-      categoryName: kudos.getCategoryName(),
-      teamName: kudos.getTeamName(),
-      message: kudos.getMessage(),
-      createdBy: kudos.getCreatedBy(),
-      createdAt: kudos.getCreatedAt(),
-      updatedAt: kudos.getUpdatedAt(),
-    }));
-
-    const totalPages = Math.ceil(total / limit);
-
-    return {
-      kudos: kudosList,
-      total,
-      page,
-      limit,
-      totalPages,
-    };
+    return ListKudosMapper.toDto(kudos, total, page, limit);
   }
 }
