@@ -19,17 +19,37 @@ A production-ready Node.js backend application built with Express and TypeScript
 - Node.js (v14 or higher)
 - npm or yarn
 
-## Installation
+## MySQL Configuration
 
-1. Clone the repository
-2. Install dependencies:
+This project requires MySQL. Configure the following environment variables in your `.env` file:
+
+```
+# MySQL Database Configuration
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=your_password
+MYSQL_DATABASE=hackathon
+```
+
+## Database Setup
+
+1. Create the MySQL database using the SQL script in `src/infrastructure/database/init.sql`
+2. Run the following command to initialize the database:
+
+```bash
+mysql -u root -p < src/infrastructure/database/init.sql
+```
+
+## Getting Started
+
+1. Install dependencies:
+
 ```bash
 npm install
 ```
 
-## Development
-
-To start the development server:
+2. Start the development server:
 
 ```bash
 npm run dev
@@ -53,7 +73,7 @@ npm start
 
 ## API Documentation
 
-API documentation is available at `/docs` when the server is running.
+API documentation is available at `/api-docs` when the server is running.
 
 ## Scripts
 
@@ -75,4 +95,4 @@ PORT=3000
 
 ## License
 
-ISC 
+ISC
