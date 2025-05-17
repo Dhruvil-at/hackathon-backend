@@ -36,7 +36,7 @@ export class AuthController {
     } catch (error) {
       res.status(200).json({
         success: false,
-        message: error,
+        message: error.message,
       });
       console.error('Login error:', error);
       next(error);
@@ -76,7 +76,7 @@ export class AuthController {
     } catch (error) {
       res.status(200).json({
         success: false,
-        message: error,
+        message: error.message,
       });
       console.error('Logout error:', error);
       next(error);
