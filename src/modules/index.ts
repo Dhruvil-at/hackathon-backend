@@ -3,6 +3,7 @@ import { router as studentRouter } from './student/presentation/routes/student.r
 import { router as authRouter } from './auth/presentation/routes/auth.routes';
 import { router as kudosRouter } from './kudos/presentation/routes/kudos.routes';
 import { router as teamRouter } from './teams/presentation/routes/team.routes';
+import { categoryRoutes } from './categories';
 
 const router = Router({ mergeParams: true });
 
@@ -11,5 +12,6 @@ router.use('/students', studentRouter);
 router.use('/auth', authRouter);
 router.use('/kudos', kudosRouter);
 router.use('/teams', teamRouter);
+router.use('/categories', categoryRoutes);
 
 export default router;
