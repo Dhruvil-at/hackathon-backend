@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { LoginFactory } from '../../application/useCases/login/loginFactory';
 import { LogoutFactory } from '../../application/useCases/logout/logoutFactory';
+import { SignupFactory } from '../../application/useCases/signup/signupFactory';
 import { AuthRequest } from '../interfaces/request';
 
 export class AuthController {
@@ -30,6 +31,41 @@ export class AuthController {
         message: error.message,
       });
       console.error('Login error:', error);
+      next(error);
+      return;
+    }
+  }
+
+  static async signup(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { firstName, lastName, email, password, teamId } = req.body;
+
+      // Create and execute use case
+      const signupUseCase = SignupFactory.create();
+      const result = await signupUseCase.execute({ firstName, lastName, email, password, teamId });
+
+      // Check if user already exists
+      if (result.userExists) {
+        return res.status(200).json({
+          success: true,
+          message: 'User with this email already exists',
+          data: { ...result },
+        });
+      }
+
+      // Return success response for new user
+      res.status(200).json({
+        success: true,
+        message: 'Signup successful',
+        data: { email: result.email, password: result.password },
+      });
+      return;
+    } catch (error) {
+      res.status(200).json({
+        success: false,
+        message: error.message,
+      });
+      console.error('Signup error:', error);
       next(error);
       return;
     }

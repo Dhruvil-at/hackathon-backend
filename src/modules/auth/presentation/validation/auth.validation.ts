@@ -5,6 +5,14 @@ const authValidation = {
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
+
+  signup: Joi.object({
+    firstName: Joi.string().required(),
+    lastName: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+    teamId: Joi.number().required(),
+  }),
 };
 
 export default authValidation;

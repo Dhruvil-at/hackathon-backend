@@ -23,7 +23,30 @@ export class BadRequestError extends HttpError {
   }
 }
 
-export const errorHandler = (err: Error, req: Request, res: Response, _next: NextFunction) => {
+// Interface for express-joi-validation error
+interface JoiValidationError extends Error {
+  value?: any;
+  error?: {
+    _original?: any;
+    details?: Array<{
+      message: string;
+      path: string[];
+      type: string;
+      context: any;
+    }>;
+  };
+  type?: string;
+}
+
+export const errorHandler = (
+  err: Error | JoiValidationError,
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+) => {
+  // Log the error for debugging
+  console.error('Error handler received error:', err);
+
   // Format error log
   const timestamp = new Date().toISOString();
   const errorLog = [
@@ -46,15 +69,25 @@ export const errorHandler = (err: Error, req: Request, res: Response, _next: Nex
   // Add stack trace in development
   if (process.env.NODE_ENV !== 'production') {
     console.error(err.stack);
-    return;
   }
 
-  // Handle Joi validation errors
+  // Handle express-joi-validation errors (matching the format provided)
+  const joiErr = err as JoiValidationError;
+  if (joiErr.error && joiErr.error.details && Array.isArray(joiErr.error.details)) {
+    const errorMessage = joiErr.error.details.map((detail) => detail.message).join(', ');
+    return res.status(400).json({
+      success: false,
+      message: `Validation Error: ${errorMessage}`,
+      data: null,
+    });
+  }
+
+  // Handle regular Joi validation errors
   if (err.name === 'ValidationError') {
     return res.status(400).json({
       success: false,
-      message: 'Validation Error',
-      errors: err.message,
+      message: `Validation Error: ${err.message}`,
+      data: null,
     });
   }
 
@@ -63,6 +96,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, _next: Nex
     return res.status(err.statusCode).json({
       success: false,
       message: err.message,
+      data: null,
     });
   }
 
@@ -71,6 +105,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, _next: Nex
     return res.status(401).json({
       success: false,
       message: 'Invalid email or password',
+      data: null,
     });
   }
 
@@ -78,6 +113,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, _next: Nex
   res.status(500).json({
     success: false,
     message: 'Internal Server Error',
+    data: null,
   });
   return;
 };

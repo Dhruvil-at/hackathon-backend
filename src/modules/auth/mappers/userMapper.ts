@@ -19,20 +19,6 @@ export class UserMapper {
     return User.create(props);
   }
 
-  static toDTO(user: User) {
-    return {
-      id: user.getId(),
-      firstName: user.getFirstName(),
-      lastName: user.getLastName(),
-      email: user.getEmail(),
-      fullName: user.getFullName(),
-      role: user.getRole(),
-      teamId: user.getTeamId(),
-      createdAt: user.getCreatedAt().toISOString(),
-      updatedAt: user.getUpdatedAt().toISOString(),
-    };
-  }
-
   static toPersistence(user: User) {
     return {
       id: user.getId(),
