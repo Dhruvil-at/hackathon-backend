@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { createValidator } from 'express-joi-validation';
 import { TeamController } from '../controllers/team.controller';
 import teamValidation from '../validation/team.validation';
-import { AuthMiddleware } from '../../../auth/presentation/middlewares/authMiddleware';
+import { AuthMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 const validator = createValidator({ passError: true });
