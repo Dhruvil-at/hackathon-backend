@@ -63,13 +63,18 @@ export class UserRepositoryImpl extends BaseRepository implements UserRepository
     return UserMapper.toDomain(result[0]);
   }
 
-  async updateRole(id: number, role: string): Promise<User | null> {
+  async updateRole(id: number, role: string, teamId: number): Promise<User | null> {
     // Update the user's role in the database
-    await this.executeQuery(
-      'updateUserRole',
-      'UPDATE hackathon.user SET role = ?, updated_at = NOW() WHERE id = ?',
-      [role, id],
-    );
+    let query = `UPDATE hackathon.user SET `;
+    if (role) {
+      query += `role = "${role}", `;
+    }
+    if (teamId) {
+      query += `teamId = ${teamId}, `;
+    }
+    query += `updated_at = NOW() WHERE id = ?`;
+
+    await this.executeQuery('updateUserRole', query, [id]);
 
     // Fetch the updated user to return
     return this.findById(id);

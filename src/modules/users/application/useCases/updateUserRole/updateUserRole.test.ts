@@ -51,7 +51,7 @@ describe('UpdateUserRole', () => {
   describe('execute', () => {
     it('should update user role successfully when user exists', async () => {
       // Arrange
-      const request = { userId: 1, role: UserRole.TECH_LEAD };
+      const request = { userId: 1, role: UserRole.TECH_LEAD, teamId: 1 };
       mockUserRepository.findById.mockResolvedValue(mockUser);
       mockUserRepository.updateRole.mockResolvedValue(mockUser);
 
@@ -60,7 +60,7 @@ describe('UpdateUserRole', () => {
 
       // Assert
       expect(mockUserRepository.findById).toHaveBeenCalledWith(1);
-      expect(mockUserRepository.updateRole).toHaveBeenCalledWith(1, UserRole.TECH_LEAD);
+      expect(mockUserRepository.updateRole).toHaveBeenCalledWith(1, UserRole.TECH_LEAD, 1);
       expect(UserMapper.toDto).toHaveBeenCalledWith(mockUser);
       expect(result).toEqual({
         success: true,
@@ -78,7 +78,7 @@ describe('UpdateUserRole', () => {
 
     it('should return failure when user does not exist', async () => {
       // Arrange
-      const request = { userId: 999, role: UserRole.TECH_LEAD };
+      const request = { userId: 999, role: UserRole.TECH_LEAD, teamId: 1 };
       mockUserRepository.findById.mockResolvedValue(null);
 
       // Act
@@ -95,7 +95,7 @@ describe('UpdateUserRole', () => {
 
     it('should return failure when update operation fails', async () => {
       // Arrange
-      const request = { userId: 1, role: UserRole.TECH_LEAD };
+      const request = { userId: 1, role: UserRole.TECH_LEAD, teamId: 1 };
       mockUserRepository.findById.mockResolvedValue(mockUser);
       mockUserRepository.updateRole.mockResolvedValue(null);
 
@@ -104,7 +104,7 @@ describe('UpdateUserRole', () => {
 
       // Assert
       expect(mockUserRepository.findById).toHaveBeenCalledWith(1);
-      expect(mockUserRepository.updateRole).toHaveBeenCalledWith(1, UserRole.TECH_LEAD);
+      expect(mockUserRepository.updateRole).toHaveBeenCalledWith(1, UserRole.TECH_LEAD, 1);
       expect(UserMapper.toDto).not.toHaveBeenCalled();
       expect(result).toEqual({
         success: false,
@@ -113,7 +113,7 @@ describe('UpdateUserRole', () => {
 
     it('should throw an error when invalid role is provided', async () => {
       // Arrange
-      const request = { userId: 1, role: 'INVALID_ROLE' as UserRole };
+      const request = { userId: 1, role: 'INVALID_ROLE' as UserRole, teamId: 1 };
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       // Act
@@ -131,7 +131,7 @@ describe('UpdateUserRole', () => {
 
     it('should handle repository errors gracefully', async () => {
       // Arrange
-      const request = { userId: 1, role: UserRole.TECH_LEAD };
+      const request = { userId: 1, role: UserRole.TECH_LEAD, teamId: 1 };
       const error = new Error('Database error');
       mockUserRepository.findById.mockRejectedValue(error);
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
@@ -161,7 +161,7 @@ describe('UpdateUserRole', () => {
         getRole: () => UserRole.TECH_LEAD,
       } as unknown as User;
 
-      const request = { userId: 1, role: UserRole.TECH_LEAD };
+      const request = { userId: 1, role: UserRole.TECH_LEAD, teamId: 1 };
       mockUserRepository.findById.mockResolvedValue(teamMemberUser);
       mockUserRepository.updateRole.mockResolvedValue(updatedUser);
 
@@ -170,7 +170,7 @@ describe('UpdateUserRole', () => {
 
       // Assert
       expect(mockUserRepository.findById).toHaveBeenCalledWith(1);
-      expect(mockUserRepository.updateRole).toHaveBeenCalledWith(1, UserRole.TECH_LEAD);
+      expect(mockUserRepository.updateRole).toHaveBeenCalledWith(1, UserRole.TECH_LEAD, 1);
       expect(UserMapper.toDto).toHaveBeenCalledWith(updatedUser);
       expect(result).toEqual({
         success: true,
@@ -193,7 +193,7 @@ describe('UpdateUserRole', () => {
         getRole: () => UserRole.ADMIN,
       } as unknown as User;
 
-      const request = { userId: 1, role: UserRole.ADMIN };
+      const request = { userId: 1, role: UserRole.ADMIN, teamId: 1 };
       mockUserRepository.findById.mockResolvedValue(techLeadUser);
       mockUserRepository.updateRole.mockResolvedValue(updatedUser);
 
@@ -202,7 +202,7 @@ describe('UpdateUserRole', () => {
 
       // Assert
       expect(mockUserRepository.findById).toHaveBeenCalledWith(1);
-      expect(mockUserRepository.updateRole).toHaveBeenCalledWith(1, UserRole.ADMIN);
+      expect(mockUserRepository.updateRole).toHaveBeenCalledWith(1, UserRole.ADMIN, 1);
       expect(UserMapper.toDto).toHaveBeenCalledWith(updatedUser);
       expect(result).toEqual({
         success: true,
@@ -215,7 +215,7 @@ describe('UpdateUserRole', () => {
 
     it('should handle specific database errors with appropriate message', async () => {
       // Arrange
-      const request = { userId: 1, role: UserRole.TECH_LEAD };
+      const request = { userId: 1, role: UserRole.TECH_LEAD, teamId: 1 };
       const specificError = new Error('Foreign key constraint violation');
       mockUserRepository.findById.mockResolvedValue(mockUser);
       mockUserRepository.updateRole.mockRejectedValue(specificError);
@@ -226,7 +226,7 @@ describe('UpdateUserRole', () => {
 
       // Assert
       expect(mockUserRepository.findById).toHaveBeenCalledWith(1);
-      expect(mockUserRepository.updateRole).toHaveBeenCalledWith(1, UserRole.TECH_LEAD);
+      expect(mockUserRepository.updateRole).toHaveBeenCalledWith(1, UserRole.TECH_LEAD, 1);
       expect(UserMapper.toDto).not.toHaveBeenCalled();
       expect(result).toEqual({
         success: false,
@@ -242,7 +242,7 @@ describe('UpdateUserRole', () => {
       // We can simulate this by providing a role that's not in the UserRole enum but cast to the type
 
       // Arrange
-      const request = { userId: 1, role: 'NOT_A_ROLE' as UserRole };
+      const request = { userId: 1, role: 'NOT_A_ROLE' as UserRole, teamId: 1 };
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       // Act

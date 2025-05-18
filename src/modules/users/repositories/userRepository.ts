@@ -12,5 +12,5 @@ export interface UserFilters {
 export interface UserRepository {
   findAll(filters?: UserFilters): Promise<{ users: User[]; total: number }>;
   findById(id: number): Promise<User | null>;
-  updateRole(id: number, role: string): Promise<User | null>;
+  updateRole(id: number, role?: string, teamId?: number): Promise<User | null>;
 }

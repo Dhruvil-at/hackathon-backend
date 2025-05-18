@@ -10,7 +10,9 @@ export class UpdateUserRole {
   async execute(request: UpdateUserRoleRequestDto): Promise<UpdateUserRoleResponseDto> {
     try {
       // Validate that the role is a valid UserRole
-      this.validateRole(request.role);
+      if (request.role) {
+        this.validateRole(request.role);
+      }
 
       // Find user by ID
       const user = await this.userRepository.findById(request.userId);
@@ -23,7 +25,11 @@ export class UpdateUserRole {
       }
 
       // Update the user's role
-      const updatedUser = await this.userRepository.updateRole(request.userId, request.role);
+      const updatedUser = await this.userRepository.updateRole(
+        request.userId,
+        request.role,
+        request.teamId,
+      );
 
       // If update failed, return failure response
       if (!updatedUser) {

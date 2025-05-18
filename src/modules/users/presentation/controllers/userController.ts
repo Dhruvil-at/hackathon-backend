@@ -39,13 +39,14 @@ export class UserController {
 
   static async updateUserRole(req: Request, res: Response, next: NextFunction) {
     try {
-      const { role, userId } = req.body;
+      const { role, userId, teamId } = req.body;
 
       // Create and execute use case to update user role
       const updateUserRoleUseCase = UpdateUserRoleFactory.create();
       const result = await updateUserRoleUseCase.execute({
         userId,
         role: role as UserRole,
+        teamId,
       });
 
       // If update failed, return appropriate error response
