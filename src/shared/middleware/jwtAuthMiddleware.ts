@@ -17,10 +17,7 @@ export interface AuthRequest extends Request {
 }
 
 export const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-  // Skip authentication for OPTIONS requests (CORS preflight)
-  if (req.method === 'OPTIONS') {
-    return next();
-  }
+
 
   const authHeader = req.headers.authorization;
   const jwtService = JwtServiceFactory.create();
