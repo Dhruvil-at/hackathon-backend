@@ -78,6 +78,7 @@ class App {
           'http://localhost:3000',
           'https://hackthon-frontend-omega.vercel.app',
           'https://hackathon-backend-h5uq.onrender.com',
+          'https://hackthon-frontend-inky.vercel.app',
         ];
         if (allowedOrigins.indexOf(origin) === -1) {
           return callback(new Error('CORS policy violation'), false);
