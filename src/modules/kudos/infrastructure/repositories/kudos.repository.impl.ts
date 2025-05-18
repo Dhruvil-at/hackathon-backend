@@ -121,7 +121,7 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
       LEFT JOIN hackathon.user creator ON k.createdById = creator.id and creator.deleted_at IS NULL
       WHERE k.deletedAt IS NULL AND u.deleted_at IS NULL AND creator.deleted_at IS NULL AND (u.firstName LIKE ? OR u.lastName LIKE ? OR k.message LIKE ?)`;
 
-    const params: any[] = [`${query}%`, `${query}%`, `${query}%`];
+    const params: any[] = [`${query}%`, `${query}%`, `%${query}%`];
 
     if (filters?.teamId) {
       sqlQuery += ' AND u.teamId = ?';
