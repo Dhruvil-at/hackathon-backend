@@ -3,7 +3,7 @@ import { createValidator } from 'express-joi-validation';
 import kudosValidation from '../validation/kudos.validation';
 import { KudosController } from '../controllers/kudos.controller';
 import { isTechLead } from '../middleware/role-check.middleware';
-import { jwtAuthMiddleware } from '../middleware/jwtAuthMiddleware';
+import { jwtAuthMiddleware } from '../../../../shared/middleware/jwtAuthMiddleware';
 
 const router = Router();
 const validator = createValidator({ passError: true });
@@ -11,6 +11,7 @@ const validator = createValidator({ passError: true });
 // GET /api/kudos/search - Search kudos by text
 router.get(
   '/search',
+  jwtAuthMiddleware,
   validator.query(kudosValidation.searchKudos),
   KudosController.searchKudos.bind(KudosController),
 );
@@ -27,6 +28,7 @@ router.post(
 // GET /api/kudos/:id - Get specific kudos details
 router.get(
   '/:id',
+  jwtAuthMiddleware,
   validator.params(kudosValidation.getKudosById),
   KudosController.getKudosById.bind(KudosController),
 );
@@ -34,6 +36,7 @@ router.get(
 // GET /api/kudos - List all kudos with filtering options
 router.get(
   '/',
+  jwtAuthMiddleware,
   validator.query(kudosValidation.listKudos),
   KudosController.listKudos.bind(KudosController),
 );

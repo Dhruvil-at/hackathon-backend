@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthRequest } from '../../../auth/presentation/interfaces/request';
+import { AuthRequest } from './jwtAuthMiddleware';
 
 export class AuthMiddleware {
   /**

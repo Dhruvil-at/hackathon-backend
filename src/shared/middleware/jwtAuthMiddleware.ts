@@ -1,6 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
-import { JwtServiceFactory } from '../../infrastructure/jwt/jwtServiceFactory';
-import { AuthRequest } from '../interfaces/request';
+import { JwtServiceFactory } from '../jwt';
+import { UserRole } from 'src/modules/auth/domain/interfaces/userRoles';
+
+// Interface for the augmented request with user data
+export interface user {
+  id: number;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email: string;
+  role: UserRole;
+  teamId: number | null;
+}
+export interface AuthRequest extends Request {
+  user?: user;
+}
 
 export const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;

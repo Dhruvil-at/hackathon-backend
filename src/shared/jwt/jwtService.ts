@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
-import { LoginResponseDto } from '../../application/useCases/login/loginResponseDto';
+import { LoginResponseDto } from '../../modules/auth/application/useCases/login/loginResponseDto';
 
 // Extended payload type to include sessionId for multi-browser support
 export type JwtPayload = LoginResponseDto & {

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { JwtServiceFactory } from '../../infrastructure/jwt/jwtServiceFactory';
+import { JwtServiceFactory } from '../../../../shared/jwt';
 
 export const checkAlreadyLoggedInMiddleware = (
   req: Request,

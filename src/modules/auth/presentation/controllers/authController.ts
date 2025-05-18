@@ -4,7 +4,7 @@ import { LogoutFactory } from '../../application/useCases/logout/logoutFactory';
 import { SignupFactory } from '../../application/useCases/signup/signupFactory';
 import { SearchUsersFactory } from '../../application/useCases/searchUsers/searchUsersFactory';
 import { AuthRequest } from '../interfaces/request';
-import { JwtServiceFactory } from '../../infrastructure/jwt/jwtServiceFactory';
+import { JwtServiceFactory } from '../../../../shared/jwt';
 
 export class AuthController {
   static async login(req: Request, res: Response, next: NextFunction) {

@@ -3,8 +3,8 @@ import { createValidator } from 'express-joi-validation';
 import authValidation from '../validation/auth.validation';
 import { AuthController } from '../controllers/authController';
 import { checkAlreadyLoggedInMiddleware } from '../middleware/checkAlreadyLoggedInMiddleware';
-import { adminTechLeadMiddleware } from '../middleware/adminTechLeadMiddleware';
-import { jwtAuthMiddleware } from '../middleware/jwtAuthMiddleware';
+import { adminTechLeadMiddleware } from '../../../../shared/middleware/adminTechLeadMiddleware';
+import { jwtAuthMiddleware } from '../../../../shared/middleware/jwtAuthMiddleware';
 
 const router = Router();
 // Set passError to true to ensure validation errors are passed to the error handler

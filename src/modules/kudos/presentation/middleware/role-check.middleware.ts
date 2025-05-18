@@ -13,7 +13,7 @@ export const isTechLead = (req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
-  if (user.role !== 'TECH_LEAD' && user.role !== 'ADMIN') {
+  if (user.role !== 'TECH_LEAD') {
     res.status(403).json({
       success: false,
       message: 'Only Tech Leads can create kudos',

@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/userController';
-import { jwtAuthMiddleware } from '../../../auth/presentation/middleware/jwtAuthMiddleware';
-import { adminTechLeadMiddleware } from '../../../auth/presentation/middleware/adminTechLeadMiddleware';
+import { jwtAuthMiddleware } from '../../../../shared/middleware/jwtAuthMiddleware';
 import { createValidator } from 'express-joi-validation';
 import userValidation from '../validation/user.validation';
+import { AuthMiddleware } from 'src/shared/middleware/authMiddleware';
 
 const router = Router();
 const validator = createValidator({ passError: true });
@@ -12,7 +12,7 @@ const validator = createValidator({ passError: true });
 router.get(
   '/',
   jwtAuthMiddleware,
-  adminTechLeadMiddleware,
+  AuthMiddleware.isAdmin,
   UserController.getAllUsers.bind(UserController),
 );
 
@@ -20,7 +20,7 @@ router.get(
 router.put(
   '/:id/role',
   jwtAuthMiddleware,
-  adminTechLeadMiddleware,
+  AuthMiddleware.isAdmin,
   validator.body(userValidation.updateRole),
   UserController.updateUserRole.bind(UserController),
 );

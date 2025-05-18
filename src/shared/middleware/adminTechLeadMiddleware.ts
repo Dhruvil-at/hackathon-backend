@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthRequest } from '../interfaces/request';
+import { AuthRequest } from './jwtAuthMiddleware';
 
 export const adminTechLeadMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
