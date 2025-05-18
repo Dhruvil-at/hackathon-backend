@@ -80,6 +80,6 @@ export class User {
 
   // Domain behavior
   async comparePassword(plainPassword: string): Promise<boolean> {
-    return plainPassword == this.props.password;
+    return plainPassword.toLocaleLowerCase() === this.props.password.toLocaleLowerCase();
   }
 }
