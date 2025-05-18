@@ -3,7 +3,7 @@ import { UserController } from '../controllers/userController';
 import { jwtAuthMiddleware } from '../../../../shared/middleware/jwtAuthMiddleware';
 import { createValidator } from 'express-joi-validation';
 import userValidation from '../validation/user.validation';
-import { AuthMiddleware } from 'src/shared/middleware/authMiddleware';
+import { AuthMiddleware } from '../../../../shared/middleware/authMiddleware';
 
 const router = Router();
 const validator = createValidator({ passError: true });
@@ -18,7 +18,7 @@ router.get(
 
 // PUT update user role - restricted to admin only
 router.put(
-  '/:id/role',
+  '/updateRole',
   jwtAuthMiddleware,
   AuthMiddleware.isAdmin,
   validator.body(userValidation.updateRole),

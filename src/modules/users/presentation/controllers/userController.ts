@@ -39,8 +39,7 @@ export class UserController {
 
   static async updateUserRole(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = parseInt(req.params.id);
-      const { role } = req.body;
+      const { role, userId } = req.body;
 
       // Create and execute use case to update user role
       const updateUserRoleUseCase = UpdateUserRoleFactory.create();

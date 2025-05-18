@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { JwtServiceFactory } from '../jwt';
-import { UserRole } from 'src/modules/auth/domain/interfaces/userRoles';
+import { UserRole } from '../../modules/auth/domain/interfaces/userRoles';
 
 // Interface for the augmented request with user data
 export interface user {

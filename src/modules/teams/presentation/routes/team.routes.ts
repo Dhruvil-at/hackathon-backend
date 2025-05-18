@@ -3,7 +3,7 @@ import { createValidator } from 'express-joi-validation';
 import { TeamController } from '../controllers/team.controller';
 import teamValidation from '../validation/team.validation';
 import { AuthMiddleware } from '../../../../shared/middleware/authMiddleware';
-import { jwtAuthMiddleware } from 'src/shared/middleware/jwtAuthMiddleware';
+import { jwtAuthMiddleware } from '../../../../shared/middleware/jwtAuthMiddleware';
 
 const router = Router();
 const validator = createValidator({ passError: true });
