@@ -33,7 +33,7 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
                    LEFT JOIN hackathon.teams t ON k.teamId = t.id 
                    LEFT JOIN hackathon.categories c ON k.categoryId = c.id 
                    LEFT JOIN hackathon.user creator ON k.createdById = creator.id
-                   WHERE k.id = ? AND k.deletedAt IS NULL`;
+                   WHERE k.id = ? AND k.deletedAt IS NULL AND u.deleted_at IS NULL AND creator.deleted_at IS NULL`;
 
     const rows = await this.executeQuery<any[]>('findKudosById', query, [id]);
 
@@ -50,7 +50,7 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
       SELECT COUNT(*) as total 
       FROM hackathon.kudos k
       LEFT JOIN hackathon.user u ON k.recipientId = u.id
-      WHERE k.deletedAt IS NULL
+      WHERE k.deletedAt IS NULL AND u.deleted_at IS NULL
       ${filters?.recipientId ? 'AND k.recipientId LIKE ?' : ''}
       ${filters?.teamId ? 'AND k.teamId = ?' : ''}
       ${filters?.categoryId ? 'AND k.categoryId = ?' : ''}
@@ -69,11 +69,11 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
       CONCAT(u.firstName, ' ', u.lastName) as recipientName,
       CONCAT(creator.firstName, ' ', creator.lastName) as createdByName
       FROM hackathon.kudos k
-      LEFT JOIN hackathon.user u ON k.recipientId = u.id
+      LEFT JOIN hackathon.user u ON k.recipientId = u.id and u.deleted_at IS NULL
       LEFT JOIN hackathon.teams t ON k.teamId = t.id
       LEFT JOIN hackathon.categories c ON k.categoryId = c.id
-      LEFT JOIN hackathon.user creator ON k.createdById = creator.id
-      WHERE k.deletedAt IS NULL`;
+      LEFT JOIN hackathon.user creator ON k.createdById = creator.id and creator.deleted_at IS NULL
+      WHERE k.deletedAt IS NULL AND u.deleted_at IS NULL AND creator.deleted_at IS NULL`;
 
     const params: any[] = [];
 
@@ -115,11 +115,11 @@ export class KudosRepositoryImpl extends BaseRepository implements KudosReposito
       CONCAT(u.firstName, ' ', u.lastName) as recipientName,
       CONCAT(creator.firstName, ' ', creator.lastName) as createdByName,
       k.recipientId as recipientId FROM hackathon.kudos k
-      LEFT JOIN hackathon.user u ON k.recipientId = u.id
+      LEFT JOIN hackathon.user u ON k.recipientId = u.id and u.deleted_at IS NULL
       LEFT JOIN hackathon.teams t ON k.teamId = t.id
       LEFT JOIN hackathon.categories c ON k.categoryId = c.id
-      LEFT JOIN hackathon.user creator ON k.createdById = creator.id
-      WHERE k.deletedAt IS NULL AND (u.firstName LIKE ? OR u.lastName LIKE ? OR k.message LIKE ?)`;
+      LEFT JOIN hackathon.user creator ON k.createdById = creator.id and creator.deleted_at IS NULL
+      WHERE k.deletedAt IS NULL AND u.deleted_at IS NULL AND creator.deleted_at IS NULL AND (u.firstName LIKE ? OR u.lastName LIKE ? OR k.message LIKE ?)`;
 
     const params: any[] = [`${query}%`, `${query}%`, `${query}%`];
 
