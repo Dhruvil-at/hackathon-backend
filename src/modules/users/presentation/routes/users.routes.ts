@@ -25,4 +25,13 @@ router.put(
   UserController.updateUserRole.bind(UserController),
 );
 
+// DELETE user (soft delete) - restricted to admin only
+router.delete(
+  '/',
+  jwtAuthMiddleware,
+  AuthMiddleware.isAdmin,
+  validator.body(userValidation.deleteUser),
+  UserController.deleteUser.bind(UserController),
+);
+
 export { router };

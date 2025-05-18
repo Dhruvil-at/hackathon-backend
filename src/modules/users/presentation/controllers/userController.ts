@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { GetAllUsersFactory } from '../../application/useCases/getAllUsers/getAllUsersFactory';
 import { UpdateUserRoleFactory } from '../../application/useCases/updateUserRole/updateUserRoleFactory';
+import { DeleteUserFactory } from '../../application/useCases/deleteUser/deleteUserFactory';
 import { UserRole } from '../../domain/interfaces/userRoles';
 
 export class UserController {
@@ -71,6 +72,41 @@ export class UserController {
         message: error.message || 'Failed to update user role',
       });
       console.error('Update user role error:', error);
+      next(error);
+      return;
+    }
+  }
+
+  static async deleteUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.body;
+
+      // Create and execute use case to delete user
+      const deleteUserUseCase = DeleteUserFactory.create();
+      const result = await deleteUserUseCase.execute(userId);
+
+      // If delete failed, return appropriate error response
+      if (!result.success) {
+        return res.status(404).json({
+          success: false,
+          message: result.message || 'User not found or deletion failed',
+        });
+      }
+
+      // Return success response
+      res.status(200).json({
+        success: true,
+        message: result.message || 'User deleted successfully',
+        data: result.user,
+      });
+      return;
+    } catch (error) {
+      // Handle errors
+      res.status(400).json({
+        success: false,
+        message: error.message || 'Failed to delete user',
+      });
+      console.error('Delete user error:', error);
       next(error);
       return;
     }

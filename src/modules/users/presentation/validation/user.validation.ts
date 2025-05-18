@@ -12,6 +12,12 @@ const updateRole = Joi.object({
   role: Joi.string().valid(...Object.values(UserRole)),
 });
 
+// Validation schema for deleting a user
+const deleteUser = Joi.object({
+  userId: Joi.number().required(),
+});
+
 export default {
   updateRole,
+  deleteUser,
 };

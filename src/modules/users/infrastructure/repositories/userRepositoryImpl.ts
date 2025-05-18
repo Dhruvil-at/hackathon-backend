@@ -79,4 +79,34 @@ export class UserRepositoryImpl extends BaseRepository implements UserRepository
     // Fetch the updated user to return
     return this.findById(id);
   }
+
+  async softDelete(id: number): Promise<User | null> {
+    // Get the user before soft deleting to return it afterwards
+    const user = await this.findById(id);
+
+    if (!user) {
+      return null;
+    }
+
+    // Soft delete the user by setting the deleted_at timestamp to current time
+    await this.executeQuery(
+      'softDeleteUser',
+      'UPDATE hackathon.user SET deleted_at = NOW(), updated_at = NOW() WHERE id = ?',
+      [id],
+    );
+
+    // Query to get the updated user with the deleted_at timestamp
+    const result = await this.executeQuery<any[]>(
+      'findDeletedUser',
+      'SELECT * FROM hackathon.user WHERE id = ?',
+      [id],
+    );
+
+    if (!result || result.length === 0) {
+      return null;
+    }
+
+    // Map the raw database result to a domain entity
+    return UserMapper.toDomain(result[0]);
+  }
 }

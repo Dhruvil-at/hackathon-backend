@@ -17,6 +17,7 @@ describe('UpdateUserRole', () => {
       findAll: jest.fn(),
       findById: jest.fn(),
       updateRole: jest.fn(),
+      softDelete: jest.fn(),
     } as jest.Mocked<UserRepository>;
 
     // Create the use case with the mock repository
