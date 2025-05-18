@@ -58,6 +58,7 @@ describe('CreateKudosUseCase', () => {
         categoryId: 1,
         message: 'Thank you for your help on the project!',
         createdBy: 123,
+        teamId: 42,
         createdAt: mockDate,
         updatedAt: mockDate,
       });
