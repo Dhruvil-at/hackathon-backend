@@ -76,7 +76,8 @@ class App {
         const allowedOrigins = [
           'http://localhost:5173',
           'http://localhost:3000',
-          'https://hackthon-frontend-omega.vercel.app/',
+          'https://hackthon-frontend-omega.vercel.app',
+          'https://hackathon-backend-h5uq.onrender.com',
         ];
         if (allowedOrigins.indexOf(origin) === -1) {
           return callback(new Error('CORS policy violation'), false);
@@ -84,6 +85,8 @@ class App {
         return callback(null, true);
       },
       credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     };
     this.app.use(cors(corsOptions));
 
