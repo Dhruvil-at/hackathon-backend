@@ -11,10 +11,10 @@ export class MySQLConnection {
     const config: PoolOptions = {
       host:
         process.env.MYSQL_HOST ||
-        'SG-avesta-hackathond-2-12623-mysql-master.servers.mongodirector.com',
+        'SG-avesta-hacakthon-3-12697-mysql-master.servers.mongodirector.com',
       port: Number(process.env.MYSQL_PORT) || 3306,
       user: process.env.MYSQL_USER || 'sgroot',
-      password: process.env.MYSQL_PASSWORD || 'niX0LAptIcZ4.GAW',
+      password: process.env.MYSQL_PASSWORD || 'R2O1D_lxOWZORqXo',
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
